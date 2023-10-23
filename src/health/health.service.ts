@@ -3,7 +3,7 @@ import { HealthCheckResponse } from './types/health.types';
 @Injectable()
 export class HealthService {
   async healthCheck(): Promise<HealthCheckResponse>{
-    return await {
+    return {
       status_code: 200,
       detail: 'ok',
       result: 'working',
