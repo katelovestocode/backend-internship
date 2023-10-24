@@ -47,18 +47,6 @@ To configure your Nest.js application, you will need an environment (`.env`) fil
    PORT=3001
    ```
 
-## 4. Environment Configuration:
-
-To configure your Nest.js application, you will need an environment (`.env`) file. This file is used to store sensitive data and configuration settings. Here's how you can set up your `.env` file:
-
-1. Create an `.env` file in the root of your project directory.
-
-2. Define your environment variables in the `.env` file. You need to specify values for variables like PORT, Database connection URLs, API keys, and other configuration settings. For example:
-
-   ```env
-   PORT=3001
-   ```
-
 ## 5.Prerequisites to run the Application in Docker
 
 Before you can run the application in Docker, make sure you have the following dependencies installed on your machine:
