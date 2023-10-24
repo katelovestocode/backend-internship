@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "docker-build:test": "docker build -t docker-image-test --progress=plain --no-cache --target test .",
+    "docker-build:prod": "docker build -t docker-image-prod --progress=plain --no-cache --target prod .",
+    "docker-run:test": "docker run -d -p 3001:3001 --name docker-image-test docker-image-test",
+    "docker-run:prod": "docker run -d -p 3001:3001 --name docker-image-prod docker-image-prod"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

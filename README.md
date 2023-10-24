@@ -55,16 +55,32 @@ Before you can run the application in Docker, make sure you have the following d
 
 ## 6. Build the Docker image using the provided Dockerfile:
 
+### FOR Tests:
+
 ```
-docker build -t backend-image .
+docker build -t docker-image-test --progress=plain --no-cache --target test .
+```
+
+### FOR Production:
+
+```
+docker build -t docker-image-prod --progress=plain --no-cache --target prod .
 ```
 
 ## 7. Run the Application
 
 Now that you have built the Docker image, you can run the application within a Docker container. Use the following command:
 
+### FOR Tests:
+
 ```
-docker run -d -p 3001:3001 --name backend-container backend-image
+docker run -d -p 3001:3001 --name docker-container-test docker-image-test
+```
+
+### FOR Production:
+
+```
+docker run -d -p 3001:3001 --name docker-container-prod docker-image-prod
 ```
 
 ## 8. Accessing the Application
@@ -80,12 +96,16 @@ http://localhost:3001
 To stop the Docker container, use the following command:
 
 ```
-docker stop backend-container
+docker stop docker-container-prod
+docker stop docker-container-test
 ```
 
 To remove the Docker container and image when you're done, run:
 
 ```
-docker rm backend-container
-docker rmi backend-container
+docker rm docker-container-prod
+docker rmi docker-container-prod
+
+docker rm docker-container-test
+docker rmi docker-container-test
 ```
