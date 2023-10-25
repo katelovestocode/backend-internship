@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        type: configService.get<'aurora-mysql'>('DB_CONNECTION'),
+        type: 'postgres',
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
