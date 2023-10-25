@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { HealthModule } from './health/health.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     HealthModule,
@@ -17,11 +19,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         host: configService.get<string>('DB_HOST'),
         port: configService.get<number>('DB_PORT'),
         entities: [__dirname + '/**/*.entity{.js, .ts}'],
+        migrations: ['dist/migrations/*{.ts,.js}'],
         autoLoadEntities: true,
         synchronize: true,
         logging: true,
       }),
     }),
+    UserModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
