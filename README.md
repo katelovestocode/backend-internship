@@ -9,6 +9,7 @@
 - [7. Run the Application](#7-run-the-application)
 - [8. Accessing the Application](#8-accessing-the-application)
 - [9. Stopping and Cleaning Up](#9-stopping-and-cleaning-up)
+- [10. Generating Migration](#10-generating-migration)
 
 ## 1. Prerequisites:
 
@@ -108,4 +109,10 @@ docker rmi docker-container-prod
 
 docker rm docker-container-test
 docker rmi docker-container-test
+```
+
+## 10. Generating Migration
+
+```
+npm run migration:generate -- db/migrations/NewMigration
 ```
