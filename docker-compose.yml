@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  db:
+    container_name: postgres-fullstack
+    image: postgres:14.0-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+  backend:
+    container_name: backend-fullstack
+    build:
+      context: ./
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - '${PORT}:3001'
+    environment:
+      - PORT=${PORT}
+      - HOST=${HOST}
+      - DB_HOST=db
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}

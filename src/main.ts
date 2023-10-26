@@ -1,12 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as dotenv from 'dotenv';
-dotenv.config();
-
-const port = process.env.PORT || 3001;
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-  await app.listen(port, '0.0.0.0');
+  const config = await app.get(ConfigService);
+  const port = config.get<number>('PORT');
+  await app.listen(port || 3001);
 }
 bootstrap();
