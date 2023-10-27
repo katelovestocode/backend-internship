@@ -1,7 +1,5 @@
 import { ConfigService } from '@nestjs/config'
 import { config } from 'dotenv'
-import { Auth } from '../src/auth/entities/auth.entity'
-import { User } from '../src/user/entities/user.entity'
 import { DataSource } from 'typeorm'
 
 config()
@@ -15,13 +13,17 @@ export default new DataSource({
   database: configService.get<string>('DB_NAME'),
   host: configService.get<string>('DB_HOST'),
   port: configService.get<number>('DB_PORT'),
-  entities: ['dist/**/*.entity.js'],
+  migrations: [__dirname + '/migrations/*{.ts,.js}'],
+  entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
   synchronize: false,
-  migrations: ['dist/db/migrations/*.js'],
   migrationsTableName: 'migrations',
   migrationsRun: true,
-  // entities: ['User, Auth'],
+  logging: 'all',
+
+  // migrations: [__dirname + '/../../db/migrations/*{.ts,.js}'],
+  // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  // migrations: ['dist/db/migrations/*.js'],
+  // entities: ['dist/**/*.entity{.ts,.js}'],
   // entities: [__dirname + '/../src/**/*.entity{.js, .ts}'],
-  // logging: configService.get('nodenv') === 'development',
   // migrations: [__dirname + '/migrations/*{.js, .ts}'],
 })
