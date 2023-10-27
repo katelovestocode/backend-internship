@@ -12,11 +12,5 @@ export default registerAs('database', () => ({
   autoLoadEntities: true,
   migrations: [__dirname + '/../../db/migrations/*{.ts,.js}'],
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-
-  // entities: ['dist/**/*.entity{.js, .ts}'],
-  //entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  // entities: [`${__dirname}/../**/*.entity{.js, .ts}`],
-  //migrations: [__dirname + '/../../migrations/*{.js, .ts}'],
-  //migrationsTableName: 'migrations',
  
 }))

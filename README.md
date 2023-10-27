@@ -10,6 +10,8 @@
 - [8. Accessing the Application](#8-accessing-the-application)
 - [9. Stopping and Cleaning Up](#9-stopping-and-cleaning-up)
 - [10. Generating Migration](#10-generating-migration)
+- [11. Run Migration](#11-run-migration)
+- [12. Revert Migration](#12-revert-migration)
 
 ## 1. Prerequisites:
 
@@ -113,6 +115,28 @@ docker rmi docker-container-test
 
 ## 10. Generating Migration
 
+To create a new database migration, use the following command:
+
 ```
-npm run migration:generate -- db/migrations/NewMigration
+npm run migration:generate -- db/migrations/<migration-name>
 ```
+
+Replace <migration-name> with a descriptive name for your migration. This will generate the necessary files for applying changes to the database schema.
+
+## 11. Run Migration
+
+Once you've generated a migration, you can apply the changes to your database by running the migration:
+
+```
+npm run migration:run
+```
+
+## 12. Revert Migration
+
+If you need to revert a migration (roll back changes to the previous state), you can use the following command:
+
+```
+npm run migration:revert
+```
+
+This will undo the most recent migration and revert your database schema to the previous state.
