@@ -14,8 +14,8 @@ export class Auth {
   @Column({ name: 'user_id' })
   userId: number
 
-  // @Column()
-  // accessToken: string
+  @Column()
+  accessToken: string
 
   @Column()
   refreshToken: string

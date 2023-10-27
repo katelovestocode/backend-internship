@@ -17,13 +17,5 @@ export default new DataSource({
   entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrationsTableName: 'migrations',
-  migrationsRun: true,
   logging: 'all',
-
-  // migrations: [__dirname + '/../../db/migrations/*{.ts,.js}'],
-  // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  // migrations: ['dist/db/migrations/*.js'],
-  // entities: ['dist/**/*.entity{.ts,.js}'],
-  // entities: [__dirname + '/../src/**/*.entity{.js, .ts}'],
-  // migrations: [__dirname + '/migrations/*{.js, .ts}'],
 })
