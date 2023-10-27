@@ -22,7 +22,7 @@
     "docker-build:prod": "docker build -t docker-image-prod --progress=plain --no-cache --target prod .",
     "docker-run:test": "docker run -d -p 3001:3001 --name docker-image-test docker-image-test",
     "docker-run:prod": "docker run -d -p 3001:3001 --name docker-image-prod docker-image-prod",
-    "typeorm": "npm run build && npx typeorm -d /dist/db/typeorm.config.js",
+    "typeorm": "npm run build && npx typeorm-ts-node-commonjs -d dist/db/typeorm.config.js",
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert"
