@@ -4,13 +4,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { AppConfig, DatabaseConfig } from './config';
+import { DatabaseConfig } from './config/database.config';
 @Module({
   imports: [
     HealthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [AppConfig, DatabaseConfig]
+      load: [DatabaseConfig]
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

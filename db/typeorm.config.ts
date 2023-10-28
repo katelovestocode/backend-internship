@@ -17,5 +17,5 @@ export default new DataSource({
   entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrationsTableName: 'migrations',
-  logging: 'all',
+  logging: ['query', 'error'],
 })
