@@ -9,8 +9,11 @@ export default registerAs('database', () => ({
   database: process.env.DB_NAME,
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-  autoLoadEntities: true,
   migrations: [__dirname + '/../../db/migrations/*{.ts,.js}'],
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  autoLoadEntities: true,
+
  
 }))
+
+export { default as DatabaseConfig } from './database.config'
