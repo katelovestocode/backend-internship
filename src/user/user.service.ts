@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { User } from './entities/user.entity'
@@ -19,13 +19,12 @@ export class UserService {
   ) {}
 
   async getAllUsers(): Promise<AllUsersResponse> {
-    const allUsers = await this.userRepository.find()
 
     return {
-      status_code: 200,
+      status_code: HttpStatus.OK,
       result: 'success',
       details: {
-        users: allUsers,
+        users: await this.userRepository.find(),
       },
     }
   }
@@ -38,7 +37,7 @@ export class UserService {
     }
 
     return {
-      status_code: 200,
+      status_code: HttpStatus.OK,
       result: 'success',
       details: {
         user: oneUser,
@@ -58,7 +57,7 @@ export class UserService {
     await this.userRepository.save(newUser)
 
     return {
-      status_code: 201,
+      status_code: HttpStatus.CREATED,
       result: 'success',
       details: {
         user: newUser,
@@ -83,7 +82,7 @@ export class UserService {
     })
 
     return {
-      status_code: 200,
+      status_code: HttpStatus.OK,
       result: 'success',
       details: {
         user: newlyUpdatedUser,
@@ -100,7 +99,7 @@ export class UserService {
     await this.userRepository.delete(id)
 
     return {
-      status_code: 204,
+      status_code: HttpStatus.OK,
       result: 'success',
       details: {
         user: id,
