@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common'
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus } from '@nestjs/common'
 import { UserService } from './user.service'
 import {
   DeletedUserResponse,
@@ -14,18 +14,21 @@ export class UserController {
 
   // get all users
   @Get()
+  @HttpCode(HttpStatus.OK)
   async getAllUsers(): Promise<AllUsersResponse> {
     return await this.userService.getAllUsers()
   }
 
   // get user by id
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   async getOneUser(@Param('id') id: number): Promise<UserResponse> {
     return await this.userService.getOneUser(id)
   }
 
   // create user
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async createUser(
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserResponse> {
@@ -34,6 +37,7 @@ export class UserController {
 
   // update user
   @Put(':id')
+  @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id') id: number,
     @Body() updatedUser: UpdateUserDto,
@@ -43,6 +47,7 @@ export class UserController {
 
   // delete user
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   async removeUser(@Param('id') id: number): Promise<DeletedUserResponse> {
     return await this.userService.removeUser(id)
   }
