@@ -1,7 +1,10 @@
+import { User } from 'src/user/entities/user.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -11,9 +14,6 @@ export class Auth {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ name: 'user_id' })
-  userId: number
-
   @Column()
   accessToken: string
 
@@ -21,11 +21,16 @@ export class Auth {
   refreshToken: string
 
   @Column()
-  action_token: string
+  actionToken: string
 
   @CreateDateColumn()
   createdAt: Date
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  @OneToOne(() => User, { cascade: true }) 
+  @JoinColumn()
+  user: User; 
+  
 }
