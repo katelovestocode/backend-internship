@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Request
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import {
@@ -19,7 +20,6 @@ import {
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { AuthGuard } from '@nestjs/passport'
-
 
 @Controller('users')
 export class UserController {
@@ -57,15 +57,21 @@ export class UserController {
   async updateUser(
     @Param('id') id: number,
     @Body() updatedUser: UpdateUserDto,
+    @Request() req,
   ): Promise<UserResponse> {
-    return await this.userService.updateUser(id, updatedUser)
+    const reqEmail = req.user.email
+    return await this.userService.updateUser(id, updatedUser, reqEmail)
   }
 
   // delete user
   @Delete(':id')
   @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
-  async removeUser(@Param('id') id: number): Promise<DeletedUserResponse> {
-    return await this.userService.removeUser(id)
+  async removeUser(
+    @Param('id') id: number,
+    @Request() req,
+  ): Promise<DeletedUserResponse> {
+    const email = req.user.email
+    return await this.userService.removeUser(id, email)
   }
 }
