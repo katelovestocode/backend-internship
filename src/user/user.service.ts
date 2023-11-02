@@ -19,7 +19,6 @@ export class UserService {
   ) {}
 
   async getAllUsers(): Promise<AllUsersResponse> {
-
     return {
       status_code: HttpStatus.OK,
       result: 'success',
@@ -105,5 +104,11 @@ export class UserService {
         user: id,
       },
     }
+  }
+
+  async getUserByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOne({
+      where: { email },
+    })
   }
 }
