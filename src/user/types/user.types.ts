@@ -31,12 +31,17 @@ type IdReturnType = {
   user: number
 }
 
-type UserWithTokens = User & JwtTokens;
+type UserWithTokens = User & JwtTokens
 
 export type LoginResponse = {
-  status_code: number;
-  result: string;
+  status_code: number
+  result: string
   details: {
-    user: UserWithTokens;
-  };
-};
+    user: UserWithTokens
+  }
+}
+
+export type JwtPayload = {
+  id?: string
+  email: string
+}

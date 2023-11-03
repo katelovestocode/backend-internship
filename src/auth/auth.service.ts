@@ -72,7 +72,7 @@ export class AuthService {
   private async validateUser(loginDto: LoginDto): Promise<User> {
     const user = await this.userService.getUserByEmail(loginDto.email)
 
-    if (user === null || !user) {
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials')
     }
     const validPasssword = await bcrypt.compare(
@@ -89,10 +89,13 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.validateUser(loginDto)
 
-    const tokens = await this.generateTokens(user)
-    const { accessToken, refreshToken, actionToken } = tokens
+    const { accessToken, refreshToken, actionToken } = await this.generateTokens(user)
 
-    await this.authRepository.update(user.id, tokens)
+    await this.authRepository.update(user.id, {
+      accessToken,
+      refreshToken,
+      actionToken,
+    })
 
     return {
       status_code: HttpStatus.OK,
@@ -108,21 +111,25 @@ export class AuthService {
     const { id, email } = user
 
     const findUser = await this.userService.getUserByEmail(email)
-    if (findUser === null || !findUser) {
+
+    if (!findUser) {
       throw new UnauthorizedException('Invalid credentials')
     }
-    const newTokens = await this.generateTokens(user)
+    const { accessToken, refreshToken, actionToken } = await this.generateTokens(user)
 
-    const { accessToken, refreshToken, actionToken } = newTokens
-    await this.authRepository.update(user.id, newTokens)
+    await this.authRepository.update(user.id, {
+      accessToken,
+      refreshToken,
+      actionToken,
+    })
 
     return { id, email, accessToken, refreshToken, actionToken }
   }
 
-  // get current or /me
+  // get current /me
   async getCurrent(user: any): Promise<UserResponse> {
-    const findUser = await this.userService.getUserByEmail(user.email)
-    const { id, name, email, password, createdAt, updatedAt, auth } = findUser
+    const { id, name, email, password, createdAt, updatedAt, auth } =
+      await this.userService.getUserByEmail(user.email)
 
     return {
       status_code: HttpStatus.OK,

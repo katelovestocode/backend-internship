@@ -106,7 +106,7 @@ export class UserService {
     }
   }
 
-  async getUserByEmail(email: string): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
     return await this.userRepository.findOne({
       where: { email },
     })
