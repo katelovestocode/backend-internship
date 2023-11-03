@@ -73,31 +73,23 @@ export class UserService {
   async updateUser(
     id: number,
     updatedUser: UpdateUserDto,
-    reqEmail: string
   ): Promise<UserResponse> {
     const user = await this.userRepository.findOne({ where: { id } })
 
     if (!user) {
-      throw new NotFoundException('User does not exist!')
-    }
-    if (user.email !== reqEmail) {
-      throw new UnauthorizedException('You can only update your own profile')
-    }
-    if (updatedUser.email) {
-      throw new BadRequestException('User cannot update their email.')
-    }
-    if (updatedUser.name) {
-      user.name = updatedUser.name
+      throw new NotFoundException('User do not exist!')
     }
     if (updatedUser.password) {
-      const hashPassword = bcrypt.hashSync(
+      updatedUser.password = bcrypt.hashSync(
         updatedUser.password,
         bcrypt.genSaltSync(10),
       )
-      user.password = hashPassword
     }
+    await this.userRepository.update(id, updatedUser)
 
-    const newlyUpdatedUser = await this.userRepository.save(user)
+    const newlyUpdatedUser = await this.userRepository.findOne({
+      where: { id },
+    })
 
     return {
       status_code: HttpStatus.OK,
@@ -108,16 +100,13 @@ export class UserService {
     }
   }
 
-  async removeUser(id: number, email: string): Promise<DeletedUserResponse> {
+
+  async removeUser(id: number): Promise<DeletedUserResponse> {
     const user = await this.userRepository.findOne({ where: { id } })
 
     if (!user) {
-      throw new NotFoundException('User does not exist')
+      throw new NotFoundException('User do not exist!')
     }
-    if (user.email !== email) {
-      throw new UnauthorizedException('You can only delete your own profile')
-    }
-
     await this.userRepository.delete(id)
 
     return {
