@@ -11,8 +11,8 @@ function generateRandomPassword(length: number): string {
   let password = ''
 
   for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    password += charset.charAt(randomIndex);
+    const randomIndex = Math.floor(Math.random() * charset.length)
+    password += charset.charAt(randomIndex)
   }
   return password
 }
@@ -37,14 +37,14 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
       audience: configService.get<string>('AUTH0_AUDIENCE', ''),
       issuer: configService.get<string>('AUTH0_ISSUER_URL', ''),
       algorithms: ['RS256'],
-      usernameField: 'email', 
+      usernameField: 'email',
     })
   }
 
   async validate(payload: any) {
     const userExist = await this.userService.getUserByEmail(payload.email)
-  
-    if (!userExist || userExist === null) {
+
+    if (!userExist) {
       const randomPassword = generateRandomPassword(11)
       const newUser = {
         email: payload.email,
