@@ -32,7 +32,7 @@ export class AuthService {
     const [accessToken, refreshToken, actionToken] = await Promise.all([
       this.jwtService.sign(payload, {
         secret: process.env.ACCESS_SECRET_KEY,
-        expiresIn: '10m',
+        expiresIn: '1h',
       }),
       this.jwtService.sign(payload, {
         secret: process.env.REFRESH_SECRET_KEY,
@@ -89,7 +89,8 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.validateUser(loginDto)
 
-    const { accessToken, refreshToken, actionToken } = await this.generateTokens(user)
+    const { accessToken, refreshToken, actionToken } =
+      await this.generateTokens(user)
 
     await this.authRepository.update(user.id, {
       accessToken,
@@ -115,7 +116,8 @@ export class AuthService {
     if (!findUser) {
       throw new UnauthorizedException('Invalid credentials')
     }
-    const { accessToken, refreshToken, actionToken } = await this.generateTokens(user)
+    const { accessToken, refreshToken, actionToken } =
+      await this.generateTokens(user)
 
     await this.authRepository.update(user.id, {
       accessToken,
