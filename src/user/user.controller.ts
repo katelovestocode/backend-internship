@@ -53,7 +53,6 @@ export class UserController {
   // update user
   @Put(':id')
   @UseGuards(AuthGuard(['jwt', 'auth0']), ValidationGuard)
-  // @UseGuards(ProfileGuard)
   @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id') id: number,
