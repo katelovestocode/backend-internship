@@ -130,14 +130,23 @@ export class AuthService {
 
   // get current /me
   async getCurrent(user: any): Promise<UserResponse> {
-    const { id, name, email, password, createdAt, updatedAt, auth } =
+    const { id, name, email, password, createdAt, updatedAt, auth, companies } =
       await this.userService.getUserByEmail(user.email)
 
     return {
       status_code: HttpStatus.OK,
       result: 'success',
       details: {
-        user: { id, name, email, password, createdAt, updatedAt, auth },
+        user: {
+          id,
+          name,
+          email,
+          password,
+          companies,
+          createdAt,
+          updatedAt,
+          auth,
+        },
       },
     }
   }

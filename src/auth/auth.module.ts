@@ -10,10 +10,11 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config'
 import { Auth0Strategy } from './strategies/auth0.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
+import { Company } from 'src/company/entities/company.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Auth, User]),
+    TypeOrmModule.forFeature([Auth, User, Company]),
     JwtModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     PassportModule.register({ defaultStrategy: 'auth0' }),
