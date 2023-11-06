@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { User } from './entities/user.entity'
@@ -73,6 +79,17 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User do not exist!')
     }
+    
+    if (updatedUser.password) {
+      updatedUser.password = bcrypt.hashSync(
+        updatedUser.password,
+        bcrypt.genSaltSync(10),
+      )
+    }
+
+    if (updatedUser.email) {
+      throw new BadRequestException('Users cannot update their own email.')
+    }
 
     await this.userRepository.update(id, updatedUser)
 
@@ -88,6 +105,7 @@ export class UserService {
       },
     }
   }
+
 
   async removeUser(id: number): Promise<DeletedUserResponse> {
     const user = await this.userRepository.findOne({ where: { id } })

@@ -19,7 +19,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { AuthGuard } from '@nestjs/passport'
-
+import { ValidationGuard } from './guards/validation.guard'
 
 @Controller('users')
 export class UserController {
@@ -38,7 +38,7 @@ export class UserController {
   @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async getOneUser(@Param('id') id: number): Promise<UserResponse> {
-    return await this.userService.getOneUser(id)
+    return await this.userService.getOneUser(+id)
   }
 
   // create user
@@ -52,20 +52,20 @@ export class UserController {
 
   // update user
   @Put(':id')
-  @UseGuards(AuthGuard(['jwt', 'auth0']))
+  @UseGuards(AuthGuard(['jwt', 'auth0']), ValidationGuard)
   @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id') id: number,
     @Body() updatedUser: UpdateUserDto,
   ): Promise<UserResponse> {
-    return await this.userService.updateUser(id, updatedUser)
+    return await this.userService.updateUser(+id, updatedUser)
   }
 
   // delete user
   @Delete(':id')
-  @UseGuards(AuthGuard(['jwt', 'auth0']))
+  @UseGuards(AuthGuard(['jwt', 'auth0']), ValidationGuard)
   @HttpCode(HttpStatus.OK)
   async removeUser(@Param('id') id: number): Promise<DeletedUserResponse> {
-    return await this.userService.removeUser(id)
+    return await this.userService.removeUser(+id)
   }
 }
