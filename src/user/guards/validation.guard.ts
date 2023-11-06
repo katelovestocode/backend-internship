@@ -19,7 +19,6 @@ export class ValidationGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest()
     const { id } = request.params
-    const { password, name, email } = request.body
     const reqEmail = request.user['email']
 
     if (context.getType() !== 'http') {
@@ -36,18 +35,6 @@ export class ValidationGuard implements CanActivate {
 
     if (reqEmail !== user.email) {
       throw new UnauthorizedException('You can only update your own profile')
-    }
-
-    if (email) {
-      throw new BadRequestException('Users cannot update their own email.')
-    }
-
-    if (name) {
-      user.name = name
-    }
-
-    if (password) {
-      user.password = password
     }
 
     return true
