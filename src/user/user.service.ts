@@ -79,12 +79,18 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User do not exist!')
     }
+    
     if (updatedUser.password) {
       updatedUser.password = bcrypt.hashSync(
         updatedUser.password,
         bcrypt.genSaltSync(10),
       )
     }
+
+    if (updatedUser.email) {
+      throw new BadRequestException('Users cannot update their own email.')
+    }
+
     await this.userRepository.update(id, updatedUser)
 
     const newlyUpdatedUser = await this.userRepository.findOne({
