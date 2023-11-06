@@ -24,13 +24,13 @@ export class CompanyValidGuard implements CanActivate {
     const { name, description } = request.body
     const reqEmail = request.user['email']
 
-    
     if (context.getType() !== 'http') {
       return false
     }
 
     const company = await this.companyRepository.findOne({
       where: { id: +id },
+      relations: ['owner'],
     })
     const user = await this.userRepository.findOne({
       where: { email: reqEmail },
@@ -40,9 +40,22 @@ export class CompanyValidGuard implements CanActivate {
       throw new BadRequestException('Company does not exist')
     }
 
-    // if (company.owner.id !== user.id) {
-    //   throw new UnauthorizedException('You can only update your own profile')
-    // }
+    if (!user) {
+      throw new BadRequestException('User is not found')
+    }
+
+    if (company.owner.id !== user.id) {
+      throw new UnauthorizedException(
+        'You can only update and delete your own companies',
+      )
+    }
+
+    if (name) {
+      company.name = name
+    }
+    if (description) {
+      company.description = description
+    }
 
     return true
   }

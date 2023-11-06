@@ -3,10 +3,10 @@ import { IsNotEmpty, IsString } from 'class-validator'
 export class CreateCompanyDto {
 
   @IsString()
-  // @IsNotEmpty()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
-  // @IsNotEmpty()
+  @IsNotEmpty()
   description: string;
 }
