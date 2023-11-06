@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   HttpStatus,
@@ -18,6 +17,11 @@ import { AuthGuard } from '@nestjs/passport'
 import { JwtPayload } from 'src/user/types/user.types'
 import { CurrentUser } from 'src/user/decorators/currentUser'
 import { CompanyValidGuard } from './guards/company-validation.guard'
+import {
+  AllCompaniesResponse,
+  CompanyResponse,
+  DeletedCompanyResponse,
+} from './types/types'
 
 @Controller('companies')
 export class CompanyController {
@@ -30,21 +34,21 @@ export class CompanyController {
   async createCompany(
     @Body() createCompanyDto: CreateCompanyDto,
     @CurrentUser() user: JwtPayload,
-  ) {
+  ): Promise<CompanyResponse> {
     return await this.companyService.createCompany(createCompanyDto, user)
   }
 
   // get all companies
   @Get()
   @UseGuards(AuthGuard(['jwt', 'auth0']))
-  async findAllCompanies() {
+  async findAllCompanies(): Promise<AllCompaniesResponse> {
     return await this.companyService.getAllCompanies()
   }
 
   // get company by id
   @Get(':id')
   @UseGuards(AuthGuard(['jwt', 'auth0']))
-  async findOneCompany(@Param('id') id: string) {
+  async findOneCompany(@Param('id') id: string): Promise<CompanyResponse> {
     return await this.companyService.getOneCompany(+id)
   }
 
@@ -53,15 +57,17 @@ export class CompanyController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   async updateCompany(
     @Param('id') id: string,
-    @Body() updateCompanyDto: UpdateCompanyDto,
-  ) {
+    @Body() updateCompanyDto: UpdateCompanyDto
+  ): Promise<CompanyResponse> {
     return await this.companyService.updateCompany(+id, updateCompanyDto)
   }
 
   // delete company
   @Delete(':id')
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
-  async removeCompany(@Param('id') id: string) {
+  async removeCompany(
+    @Param('id') id: string,
+  ): Promise<DeletedCompanyResponse> {
     return await this.companyService.removeCompany(+id)
   }
 }

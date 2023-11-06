@@ -5,6 +5,12 @@ import { Company } from './entities/company.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { UserService } from 'src/user/user.service'
+import {
+  AllCompaniesResponse,
+  CompanyResponse,
+  DeletedCompanyResponse,
+} from './types/types'
+import { JwtPayload } from 'src/user/types/user.types'
 
 @Injectable()
 export class CompanyService {
@@ -14,7 +20,10 @@ export class CompanyService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
-  async createCompany(createCompanyDto: CreateCompanyDto, user: any) {
+  async createCompany(
+    createCompanyDto: CreateCompanyDto,
+    user: JwtPayload,
+  ): Promise<CompanyResponse> {
     const owner = await this.userService.getUserByEmail(user.email)
 
     if (!owner) {
@@ -35,12 +44,12 @@ export class CompanyService {
       result: 'success',
       details: {
         company: newCompany,
-      }
+      },
     }
   }
 
-  async getAllCompanies() {
-     return {
+  async getAllCompanies(): Promise<AllCompaniesResponse> {
+    return {
       status_code: HttpStatus.OK,
       result: 'success',
       details: {
@@ -49,13 +58,13 @@ export class CompanyService {
     }
   }
 
-  async getOneCompany(id: number) {
+  async getOneCompany(id: number): Promise<CompanyResponse> {
     const oneCompany = await this.companyRepository.findOne({ where: { id } })
 
     if (!oneCompany) {
       throw new NotFoundException('Company do not exist!')
     }
-  
+
     return {
       status_code: HttpStatus.OK,
       result: 'success',
@@ -65,12 +74,16 @@ export class CompanyService {
     }
   }
 
-  async updateCompany(id: number, updateCompanyDto: UpdateCompanyDto) {
-     const company = await this.companyRepository.findOne({ where: { id } })
-      if (!company) {
+  async updateCompany(
+    id: number,
+    updateCompanyDto: UpdateCompanyDto,
+  ): Promise<CompanyResponse> {
+    const company = await this.companyRepository.findOne({ where: { id } })
+
+    if (!company) {
       throw new NotFoundException('Company do not exist!')
-      }
-    
+    }
+
     await this.companyRepository.update(id, updateCompanyDto)
 
     const newlyUpdatedCompany = await this.companyRepository.findOne({
@@ -84,15 +97,14 @@ export class CompanyService {
         company: newlyUpdatedCompany,
       },
     }
-  
   }
 
-  async removeCompany(id: number) {
-   const company = await this.companyRepository.findOne({ where: { id } })
-      if (!company) {
+  async removeCompany(id: number): Promise<DeletedCompanyResponse> {
+    const company = await this.companyRepository.findOne({ where: { id } })
+    if (!company) {
       throw new NotFoundException('Company do not exist!')
-      }
-    
+    }
+
     await this.companyRepository.delete(id)
 
     return {

@@ -4,10 +4,10 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
   @IsString()
-  // @IsNotEmpty()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
-  // @IsNotEmpty()
+  @IsNotEmpty()
   description: string;
 }
