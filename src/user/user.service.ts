@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { User } from './entities/user.entity'
@@ -19,48 +25,60 @@ export class UserService {
   ) {}
 
   async getAllUsers(): Promise<AllUsersResponse> {
-    return {
-      status_code: HttpStatus.OK,
-      result: 'success',
-      details: {
-        users: await this.userRepository.find(),
-      },
+    try {
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          users: await this.userRepository.find(),
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 
   async getOneUser(id: number): Promise<UserResponse> {
-    const oneUser = await this.userRepository.findOne({ where: { id } })
+    try {
+      const oneUser = await this.userRepository.findOne({ where: { id } })
 
-    if (!oneUser) {
-      throw new NotFoundException('User do not exist!')
-    }
+      if (!oneUser) {
+        throw new NotFoundException('User do not exist!')
+      }
 
-    return {
-      status_code: HttpStatus.OK,
-      result: 'success',
-      details: {
-        user: oneUser,
-      },
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          user: oneUser,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 
   async createUser(user: CreateUserDto): Promise<UserResponse> {
-    const password = user.password
-    const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+    try {
+      const password = user.password
+      const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 
-    const newUser = await this.userRepository.create({
-      ...user,
-      password: hashPassword,
-    })
+      const newUser = await this.userRepository.create({
+        ...user,
+        password: hashPassword,
+      })
 
-    await this.userRepository.save(newUser)
+      await this.userRepository.save(newUser)
 
-    return {
-      status_code: HttpStatus.CREATED,
-      result: 'success',
-      details: {
-        user: newUser,
-      },
+      return {
+        status_code: HttpStatus.CREATED,
+        result: 'success',
+        details: {
+          user: newUser,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 
@@ -68,59 +86,70 @@ export class UserService {
     id: number,
     updatedUser: UpdateUserDto,
   ): Promise<UserResponse> {
-    const user = await this.userRepository.findOne({ where: { id } })
+    try {
+      const user = await this.userRepository.findOne({ where: { id } })
 
-    if (!user) {
-      throw new NotFoundException('User do not exist!')
-    }
-    
-    if (updatedUser.password) {
-      updatedUser.password = bcrypt.hashSync(
-        updatedUser.password,
-        bcrypt.genSaltSync(10),
-      )
-    }
+      if (!user) {
+        throw new NotFoundException('User do not exist!')
+      }
 
-    if (updatedUser.email) {
-      throw new BadRequestException('Users cannot update their own email.')
-    }
+      if (updatedUser.password) {
+        updatedUser.password = bcrypt.hashSync(
+          updatedUser.password,
+          bcrypt.genSaltSync(10),
+        )
+      }
 
-    await this.userRepository.update(id, updatedUser)
+      if (updatedUser.email) {
+        throw new BadRequestException('Users cannot update their own email.')
+      }
 
-    const newlyUpdatedUser = await this.userRepository.findOne({
-      where: { id },
-    })
+      await this.userRepository.update(id, updatedUser)
 
-    return {
-      status_code: HttpStatus.OK,
-      result: 'success',
-      details: {
-        user: newlyUpdatedUser,
-      },
+      const newlyUpdatedUser = await this.userRepository.findOne({
+        where: { id },
+      })
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          user: newlyUpdatedUser,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 
-
   async removeUser(id: number): Promise<DeletedUserResponse> {
-    const user = await this.userRepository.findOne({ where: { id } })
+    try {
+      const user = await this.userRepository.findOne({ where: { id } })
 
-    if (!user) {
-      throw new NotFoundException('User do not exist!')
-    }
-    await this.userRepository.delete(id)
+      if (!user) {
+        throw new NotFoundException('User do not exist!')
+      }
+      await this.userRepository.delete(id)
 
-    return {
-      status_code: HttpStatus.OK,
-      result: 'success',
-      details: {
-        user: id,
-      },
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          user: id,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return await this.userRepository.findOne({
-      where: { email },
-    })
+    try {
+      return await this.userRepository.findOne({
+        where: { email },
+      })
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
   }
 }

@@ -21,7 +21,6 @@ export class CompanyValidGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest()
     const { id } = request.params
-    const { name, description } = request.body
     const reqEmail = request.user['email']
 
     if (context.getType() !== 'http') {
@@ -48,13 +47,6 @@ export class CompanyValidGuard implements CanActivate {
       throw new UnauthorizedException(
         'You can only update and delete your own companies',
       )
-    }
-
-    if (name) {
-      company.name = name
-    }
-    if (description) {
-      company.description = description
     }
 
     return true
