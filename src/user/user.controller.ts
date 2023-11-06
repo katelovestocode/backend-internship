@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common'
 import { UserService } from './user.service'
 import {
   DeletedUserResponse,
@@ -7,6 +18,8 @@ import {
 } from './types/user.types'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { AuthGuard } from '@nestjs/passport'
+
 
 @Controller('users')
 export class UserController {
@@ -14,6 +27,7 @@ export class UserController {
 
   // get all users
   @Get()
+  @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async getAllUsers(): Promise<AllUsersResponse> {
     return await this.userService.getAllUsers()
@@ -21,6 +35,7 @@ export class UserController {
 
   // get user by id
   @Get(':id')
+  @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async getOneUser(@Param('id') id: number): Promise<UserResponse> {
     return await this.userService.getOneUser(id)
@@ -37,6 +52,7 @@ export class UserController {
 
   // update user
   @Put(':id')
+  @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id') id: number,
@@ -47,6 +63,7 @@ export class UserController {
 
   // delete user
   @Delete(':id')
+  @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async removeUser(@Param('id') id: number): Promise<DeletedUserResponse> {
     return await this.userService.removeUser(id)

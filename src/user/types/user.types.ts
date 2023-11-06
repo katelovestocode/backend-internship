@@ -1,33 +1,47 @@
+import { JwtTokens } from 'src/auth/types/auth.types'
 import { User } from '../entities/user.entity'
 
 export type AllUsersResponse = {
-  status_code: number;
-  result: string;
-  details: AllUsersDetails;
-
+  status_code: number
+  result: string
+  details: AllUsersDetails
 }
 
 type AllUsersDetails = {
-  users: User[] 
+  users: User[]
 }
 
 export type UserResponse = {
-  status_code: number;
-  result: string;
-  details: UserDetails;
+  status_code: number
+  result: string
+  details: UserDetails
 }
 
-type UserDetails = {
+export type UserDetails = {
   user: User
 }
 
-
 export type DeletedUserResponse = {
-  status_code: number;
-  result: string;
-  details: IdReturnType;
+  status_code: number
+  result: string
+  details: IdReturnType
 }
 
 type IdReturnType = {
   user: number
+}
+
+type UserWithTokens = User & JwtTokens
+
+export type LoginResponse = {
+  status_code: number
+  result: string
+  details: {
+    user: UserWithTokens
+  }
+}
+
+export type JwtPayload = {
+  id?: string
+  email: string
 }

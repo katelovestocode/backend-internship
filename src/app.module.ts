@@ -7,18 +7,19 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseConfig } from './config/database.config';
 @Module({
   imports: [
-    HealthModule,
     ConfigModule.forRoot({
+      envFilePath: '.env',
       isGlobal: true,
       load: [DatabaseConfig]
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule.forRoot()],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         ...configService.get('database'),
       }),
     }),
+    HealthModule,
     UserModule,
     AuthModule,
   ],
