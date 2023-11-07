@@ -2,6 +2,7 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
@@ -49,96 +50,135 @@ export class AuthService {
 
   // register
   async register(createUserDto: CreateUserDto): Promise<UserResponse> {
-    const candidate = await this.userService.getUserByEmail(createUserDto.email)
+    try {
+      const candidate = await this.userService.getUserByEmail(
+        createUserDto.email,
+      )
 
-    if (candidate) {
-      throw new BadRequestException('User with this email exists!')
+      if (candidate) {
+        throw new BadRequestException('User with this email exists!')
+      }
+      const user = await this.userService.createUser(createUserDto)
+
+      const auth = new Auth()
+      auth.accessToken = ''
+      auth.refreshToken = ''
+      auth.actionToken = ''
+
+      auth.user = user.details.user
+
+      await this.authRepository.save(auth)
+
+      return user
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
-    const user = await this.userService.createUser(createUserDto)
-
-    const auth = new Auth()
-    auth.accessToken = ''
-    auth.refreshToken = ''
-    auth.actionToken = ''
-
-    auth.user = user.details.user
-
-    await this.authRepository.save(auth)
-
-    return user
   }
 
   // validate user
   private async validateUser(loginDto: LoginDto): Promise<User> {
-    const user = await this.userService.getUserByEmail(loginDto.email)
+    try {
+      const user = await this.userService.getUserByEmail(loginDto.email)
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials')
+      if (!user) {
+        throw new UnauthorizedException('Invalid credentials')
+      }
+      const validPasssword = await bcrypt.compare(
+        loginDto.password,
+        user.password,
+      )
+      if (!validPasssword) {
+        throw new UnauthorizedException('Invalid credentials')
+      }
+      return user
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
-    const validPasssword = await bcrypt.compare(
-      loginDto.password,
-      user.password,
-    )
-    if (!validPasssword) {
-      throw new UnauthorizedException('Invalid credentials')
-    }
-    return user
   }
 
   // login
   async login(loginDto: LoginDto): Promise<LoginResponse> {
-    const user = await this.validateUser(loginDto)
+    try {
+      const user = await this.validateUser(loginDto)
 
-    const { accessToken, refreshToken, actionToken } =
-      await this.generateTokens(user)
+      const { accessToken, refreshToken, actionToken } =
+        await this.generateTokens(user)
 
-    await this.authRepository.update(user.id, {
-      accessToken,
-      refreshToken,
-      actionToken,
-    })
+      await this.authRepository.update(user.id, {
+        accessToken,
+        refreshToken,
+        actionToken,
+      })
 
-    return {
-      status_code: HttpStatus.OK,
-      result: 'success',
-      details: {
-        user: { ...user, accessToken, refreshToken, actionToken },
-      },
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          user: { ...user, accessToken, refreshToken, actionToken },
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 
   //refresh token
   async refreshTokens(user: any): Promise<RefreshResponse> {
-    const { id, email } = user
+    try {
+      const { id, email } = user
 
-    const findUser = await this.userService.getUserByEmail(email)
+      const findUser = await this.userService.getUserByEmail(email)
 
-    if (!findUser) {
-      throw new UnauthorizedException('Invalid credentials')
+      if (!findUser) {
+        throw new UnauthorizedException('Invalid credentials')
+      }
+      const { accessToken, refreshToken, actionToken } =
+        await this.generateTokens(user)
+
+      await this.authRepository.update(user.id, {
+        accessToken,
+        refreshToken,
+        actionToken,
+      })
+
+      return { id, email, accessToken, refreshToken, actionToken }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
-    const { accessToken, refreshToken, actionToken } =
-      await this.generateTokens(user)
-
-    await this.authRepository.update(user.id, {
-      accessToken,
-      refreshToken,
-      actionToken,
-    })
-
-    return { id, email, accessToken, refreshToken, actionToken }
   }
 
   // get current /me
   async getCurrent(user: any): Promise<UserResponse> {
-    const { id, name, email, password, createdAt, updatedAt, auth } =
-      await this.userService.getUserByEmail(user.email)
+    try {
+      const {
+        id,
+        name,
+        email,
+        password,
+        createdAt,
+        updatedAt,
+        auth,
+        companies,
+      } = await this.userService.getUserByEmail(user.email)
 
-    return {
-      status_code: HttpStatus.OK,
-      result: 'success',
-      details: {
-        user: { id, name, email, password, createdAt, updatedAt, auth },
-      },
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          user: {
+            id,
+            name,
+            email,
+            password,
+            companies,
+            createdAt,
+            updatedAt,
+            auth,
+          },
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
     }
   }
 }
