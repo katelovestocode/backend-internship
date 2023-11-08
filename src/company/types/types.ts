@@ -29,3 +29,17 @@ export type DeletedCompanyResponse = {
 type IdReturnType = {
   company: number
 }
+
+export enum InvitationStatus {
+  Pending = 'pending',
+  Accepted = 'accepted',
+  Declined = 'declined',
+  Cancelled = 'cancelled',
+}
+
+export enum RequestStatus {
+  Pending = 'pending',
+  Accepted = 'accepted',
+  Declined = 'declined',
+  Cancelled = 'cancelled',
+}

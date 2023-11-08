@@ -19,7 +19,8 @@ import {
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { AuthGuard } from '@nestjs/passport'
-import { ValidationGuard } from './guards/validation.guard'
+import { UserValidGuard } from './guards/validation.guard'
+import { CompanyResponse } from 'src/company/types/types'
 
 @Controller('users')
 export class UserController {
@@ -51,21 +52,32 @@ export class UserController {
   }
 
   // update user
-  @Put(':id')
-  @UseGuards(AuthGuard(['jwt', 'auth0']), ValidationGuard)
+  @Put(':userId')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async updateUser(
-    @Param('id') id: number,
+    @Param('userId') id: number,
     @Body() updatedUser: UpdateUserDto,
   ): Promise<UserResponse> {
     return await this.userService.updateUser(+id, updatedUser)
   }
 
   // delete user
-  @Delete(':id')
-  @UseGuards(AuthGuard(['jwt', 'auth0']), ValidationGuard)
+  @Delete(':userId')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
-  async removeUser(@Param('id') id: number): Promise<DeletedUserResponse> {
+  async removeUser(@Param('userId') id: number): Promise<DeletedUserResponse> {
     return await this.userService.removeUser(+id)
+  }
+
+  // user leaves the company
+  @Delete('/:userId/companies/:companyId')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
+  @HttpCode(HttpStatus.OK)
+  async leaveCompany(
+    @Param('userId') userId: number,
+    @Param('companyId') companyId: number,
+  ): Promise<CompanyResponse> {
+    return this.userService.userLeavesCompany(+userId, +companyId)
   }
 }

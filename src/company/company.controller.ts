@@ -40,6 +40,7 @@ export class CompanyController {
 
   // get all companies
   @Get()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard(['jwt', 'auth0']))
   async findAllCompanies(): Promise<AllCompaniesResponse> {
     return await this.companyService.getAllCompanies()
@@ -47,27 +48,41 @@ export class CompanyController {
 
   // get company by id
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard(['jwt', 'auth0']))
   async findOneCompany(@Param('id') id: string): Promise<CompanyResponse> {
     return await this.companyService.getOneCompany(+id)
   }
 
   // update company by id
-  @Put(':id')
+  @Put(':companyId')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   async updateCompany(
-    @Param('id') id: string,
-    @Body() updateCompanyDto: UpdateCompanyDto
+    @Param('companyId') id: string,
+    @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<CompanyResponse> {
     return await this.companyService.updateCompany(+id, updateCompanyDto)
   }
 
   // delete company
-  @Delete(':id')
+  @Delete(':companyId')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   async removeCompany(
-    @Param('id') id: string,
+    @Param('companyId') id: string,
   ): Promise<DeletedCompanyResponse> {
     return await this.companyService.removeCompany(+id)
+  }
+
+  // owner removes user from the company member's list
+  @Delete('/:companyId/members/:userId')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
+  @HttpCode(HttpStatus.OK)
+  async removeMemberFromCompany(
+    @Param('companyId') companyId: number,
+    @Param('userId') userId: number,
+  ): Promise<CompanyResponse> {
+    return this.companyService.ownerRemoveUserFromCompany(+companyId, +userId)
   }
 }
