@@ -140,4 +140,36 @@ export class CompanyService {
       throw new InternalServerErrorException(error.message)
     }
   }
+
+  async ownerRemoveUserFromCompany(
+    companyId: number,
+    userId: number,
+  ): Promise<CompanyResponse> {
+    try {
+      const company = await this.companyRepository.findOne({
+        where: { id: +companyId },
+        relations: ['owner', 'members'],
+      })
+      const userToRemove = company.members.find((user) => user.id === userId)
+
+      if (!userToRemove) {
+        throw new NotFoundException(
+          'User is not found in the company members list',
+        )
+      }
+
+      company.members = company.members.filter((user) => user.id !== userId)
+      const updated = await this.companyRepository.save(company)
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'success',
+        details: {
+          company: updated,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
 }

@@ -159,6 +159,10 @@ export class AuthService {
         updatedAt,
         auth,
         companies,
+        sentInvitations,
+        receivedInvitations,
+        sentRequests,
+        reqCompanies,
       } = await this.userService.getUserByEmail(user.email)
 
       return {
@@ -174,6 +178,10 @@ export class AuthService {
             createdAt,
             updatedAt,
             auth,
+            sentInvitations,
+            receivedInvitations,
+            sentRequests,
+            reqCompanies,
           },
         },
       }
