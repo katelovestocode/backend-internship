@@ -47,7 +47,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.CREATED,
-        result: 'success',
+        result: 'Company successfully has been created',
         details: {
           company: newCompany,
         },
@@ -61,7 +61,7 @@ export class CompanyService {
     try {
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved all companies',
         details: {
           companies: await this.companyRepository.find(),
         },
@@ -81,7 +81,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved one company',
         details: {
           company: oneCompany,
         },
@@ -110,7 +110,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully updated company information',
         details: {
           company: newlyUpdatedCompany,
         },
@@ -131,7 +131,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully removed the company',
         details: {
           company: id,
         },
@@ -147,9 +147,14 @@ export class CompanyService {
   ): Promise<CompanyResponse> {
     try {
       const company = await this.companyRepository.findOne({
-        where: { id: +companyId },
+        where: { id: companyId },
         relations: ['owner', 'members'],
       })
+
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
       const userToRemove = company.members.find((user) => user.id === userId)
 
       if (!userToRemove) {
@@ -163,7 +168,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Companys owner successfully removed the user',
         details: {
           company: updated,
         },

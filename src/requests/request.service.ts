@@ -1,11 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm'
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import { Request } from './entities/request.entity'
 import { Company } from 'src/company/entities/company.entity'
 import { RequestStatus } from 'src/company/types/types'
@@ -31,7 +32,7 @@ export class RequestService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved all requests',
         details: {
           requests: allRequests,
         },
@@ -48,24 +49,38 @@ export class RequestService {
   ): Promise<JoinRequest> {
     try {
       const company = await this.companyRepository.findOne({
-        where: { id: +companyId },
+        where: { id: companyId },
       })
 
       if (!company) {
         throw new NotFoundException('Company is not found')
       }
 
+      const existingRequest = await this.requestRepository.findOne({
+        where: {
+          company: { id: companyId },
+          requester: { id: userId },
+          status: In(['pending', 'accepted', 'declined']),
+        },
+      })
+
+      if (existingRequest) {
+        throw new BadRequestException(
+          'User already has a pending, accepted or declined request for this company',
+        )
+      }
+
       const request = this.requestRepository.create({
         status: RequestStatus.Pending,
-        requester: { id: +userId },
-        company: { id: +company.id },
+        requester: { id: userId },
+        company: { id: company.id },
       })
 
       const newRequest = await this.requestRepository.save(request)
 
       return {
         status_code: HttpStatus.CREATED,
-        result: 'success',
+        result: 'Request has been sent successfully',
         details: {
           request: newRequest,
         },
@@ -82,29 +97,36 @@ export class RequestService {
   ): Promise<JoinRequest> {
     try {
       const request = await this.requestRepository.findOne({
-        where: { id: +requestId },
+        where: { id: requestId },
         relations: ['requester'],
       })
       if (!request) {
         throw new NotFoundException('Request is not found')
       }
+
       if (request.requester.id !== userId) {
         throw new NotFoundException('Request does not belong to the user')
       }
+
       if (request.status === 'cancelled') {
         throw new NotFoundException('Request is already cancelled')
       }
+
+      if (request.status !== 'pending') {
+        throw new BadRequestException('Request is not in pending status')
+      }
+
       await this.requestRepository.update(request.id, {
         status: RequestStatus.Cancelled,
       })
 
       const updatedRequest = await this.requestRepository.findOne({
-        where: { id: +requestId },
+        where: { id: requestId },
         relations: ['requester'],
       })
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Request has been cancelled successfully',
         details: {
           request: updatedRequest,
         },
@@ -125,7 +147,7 @@ export class RequestService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved all requests',
         details: {
           requests: allRequests,
         },
@@ -146,6 +168,10 @@ export class RequestService {
         relations: ['owner', 'members'],
       })
 
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
       const request = await this.requestRepository.findOne({
         where: { id: requestId },
         relations: ['requester'],
@@ -159,6 +185,10 @@ export class RequestService {
         throw new NotFoundException('Request is already accepted')
       }
 
+      if (request.status !== 'pending') {
+        throw new BadRequestException('Request is not in pending status')
+      }
+
       company.members.push(request.requester)
       await this.companyRepository.save(company)
 
@@ -167,7 +197,7 @@ export class RequestService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Request has been accepted',
         details: {
           request: acceptedRequest,
         },
@@ -183,6 +213,15 @@ export class RequestService {
     requestId: number,
   ): Promise<JoinRequest> {
     try {
+      const company = await this.companyRepository.findOne({
+        where: { id: companyId },
+        relations: ['owner', 'members'],
+      })
+
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
       const request = await this.requestRepository.findOne({
         where: { id: requestId, company: { id: companyId } },
         relations: ['requester'],
@@ -196,12 +235,16 @@ export class RequestService {
         throw new NotFoundException('Request is already declined')
       }
 
+      if (request.status !== 'pending') {
+        throw new BadRequestException('Request is not in pending status')
+      }
+
       request.status = RequestStatus.Declined
       const declinedRequest = await this.requestRepository.save(request)
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Request has been declined',
         details: {
           request: declinedRequest,
         },
