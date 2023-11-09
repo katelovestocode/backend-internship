@@ -38,6 +38,10 @@ export class Company {
   @JoinTable()
   members: User[]
 
+  @ManyToMany(() => User, (user) => user.adminCompanies)
+  @JoinTable()
+  admins: User[];
+
   @CreateDateColumn()
   createdAt: Date
 

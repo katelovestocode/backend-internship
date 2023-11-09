@@ -30,6 +30,7 @@ export class User {
   @OneToOne(() => Auth, (auth) => auth.user)
   auth: Auth
 
+  // user's companies
   @OneToMany(() => Company, (company) => company.owner)
   companies: Company[]
 
@@ -42,9 +43,14 @@ export class User {
   @OneToMany(() => Request, (request) => request.requester)
   sentRequests: Request[]
 
+  // user is a member of other companies
   @ManyToMany(() => Company, (company) => company.members)
   reqCompanies: Company[]
 
+  // user is an admin of the company
+  @ManyToMany(() => Company, (company) => company.admins)
+  adminCompanies: Company[];
+  
   @CreateDateColumn()
   createdAt: Date
 
