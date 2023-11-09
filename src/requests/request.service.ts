@@ -42,7 +42,6 @@ export class RequestService {
   }
 
   // USER sends a request to join a company
-  //  body {"companyId": 3}
   async userSendsJoinRequest(
     companyId: number,
     userId: number,

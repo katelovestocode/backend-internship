@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
@@ -10,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { RequestService } from './request.service'
-import { JoinRequestDto } from './dto/join-request.dto'
 import { AuthGuard } from '@nestjs/passport'
 import { UserValidGuard } from 'src/user/guards/validation.guard'
 import { CompanyValidGuard } from 'src/company/guards/company-validation.guard'
@@ -30,13 +28,12 @@ export class RequestController {
   }
 
   // USER sends a request to join a company
-  //  body {"companyId": 3}
-  @Post('/users/:userId/requests')
+  @Post('/users/:userId/requests/:companyId')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.CREATED)
   async sendJoinRequest(
     @Param('userId') userId: number,
-    @Body() { companyId }: JoinRequestDto,
+    @Param('companyId') companyId: number,
   ): Promise<JoinRequest> {
     return await this.requestService.userSendsJoinRequest(+companyId, +userId)
   }
