@@ -48,7 +48,6 @@ export class InvitationService {
   }
 
   // COMPANY sends invitation
-  // body {"inviteeId": 3}
   async compSendsInvitation(
     inviteeId: number,
     companyId: number,

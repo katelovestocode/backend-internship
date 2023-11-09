@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
@@ -12,7 +11,6 @@ import {
 import { InvitationService } from './invitation.service'
 import { CompanyValidGuard } from 'src/company/guards/company-validation.guard'
 import { AuthGuard } from '@nestjs/passport'
-import { CreateInvitationDto } from './dto/create-invitation.dto'
 import { UserValidGuard } from 'src/user/guards/validation.guard'
 import { AllInvitesResponse, InvitationResponse } from './types/types'
 
@@ -32,13 +30,12 @@ export class InvitationController {
   }
 
   // COMPANY sends invitation
-  // body {"inviteeId": 3}
-  @Post('/companies/:companyId/invitations')
+  @Post('/companies/:companyId/invitations/:inviteeId')
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.CREATED)
   async sendCompanyInvitations(
     @Param('companyId') companyId: number,
-    @Body() { inviteeId }: CreateInvitationDto,
+    @Param('inviteeId') inviteeId: number,
   ): Promise<InvitationResponse> {
     return await this.invitationService.compSendsInvitation(
       +inviteeId,
