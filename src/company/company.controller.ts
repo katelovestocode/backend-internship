@@ -83,6 +83,36 @@ export class CompanyController {
     @Param('companyId') companyId: string,
     @Param('userId') userId: string,
   ): Promise<CompanyResponse> {
-    return this.companyService.ownerRemoveUserFromCompany(+companyId, +userId)
+    return await this.companyService.ownerRemoveUserFromCompany(
+      +companyId,
+      +userId,
+    )
+  }
+
+  // company owner makes a user an admin or cancel admin status
+  //{"isAdmin": true }
+  @Post('/:companyId/members/:userId/admin')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
+  @HttpCode(HttpStatus.OK)
+  async toggleAdminStatus(
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
+    @Body('isAdmin') isAdmin: boolean,
+  ): Promise<CompanyResponse> {
+    return await this.companyService.toggleAdminStatus(
+      +companyId,
+      +userId,
+      isAdmin,
+    )
+  }
+
+  //company owner gets all company's admins
+  @Get('/:companyId/admins')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
+  @HttpCode(HttpStatus.OK)
+  async getCompanyAdmins(
+    @Param('companyId') companyId: string,
+  ): Promise<CompanyResponse> {
+    return await this.companyService.getCompanyAdmins(+companyId)
   }
 }

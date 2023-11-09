@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common'
 import { CreateCompanyDto } from './dto/create-company.dto'
 import { UpdateCompanyDto } from './dto/update-company.dto'
@@ -171,6 +172,75 @@ export class CompanyService {
         result: 'Companys owner successfully removed the user',
         details: {
           company: updated,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  // company owner makes a user an admin or cancel admin status
+  //{"isAdmin": true }
+  async toggleAdminStatus(
+    companyId: number,
+    userId: number,
+    isAdmin: boolean,
+  ): Promise<CompanyResponse> {
+    try {
+      const company = await this.companyRepository.findOne({
+        where: { id: companyId },
+        relations: ['owner', 'members', 'admins'],
+      })
+
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
+      const user = company.members.find((member) => member.id === userId)
+
+      if (!user) {
+        throw new NotFoundException(
+          'User is not found as a member of the company',
+        )
+      }
+
+      if (isAdmin) {
+        company.admins.push(user)
+      } else {
+        company.admins = company.admins.filter((admin) => admin.id !== userId)
+      }
+
+      const updatedCompany = await this.companyRepository.save(company)
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'Admin status is successfully updated',
+        details: {
+          company: updatedCompany,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  //company owner gets all company's admins
+  async getCompanyAdmins(companyId: number): Promise<CompanyResponse> {
+    try {
+      const company = await this.companyRepository.findOne({
+        where: { id: companyId },
+        relations: ['admins'],
+      })
+
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
+      return {
+        status_code: HttpStatus.OK,
+        result: "Successfully retrieved company's admins",
+        details: {
+          company: company,
         },
       }
     } catch (error) {
