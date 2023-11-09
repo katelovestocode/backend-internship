@@ -24,7 +24,7 @@ export class InvitationController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.OK)
   async getCompanyInvitations(
-    @Param('companyId') companyId: number,
+    @Param('companyId') companyId: string,
   ): Promise<AllInvitesResponse> {
     return this.invitationService.getAllCompanyInvitations(+companyId)
   }
@@ -34,8 +34,8 @@ export class InvitationController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.CREATED)
   async sendCompanyInvitations(
-    @Param('companyId') companyId: number,
-    @Param('inviteeId') inviteeId: number,
+    @Param('companyId') companyId: string,
+    @Param('inviteeId') inviteeId: string,
   ): Promise<InvitationResponse> {
     return await this.invitationService.compSendsInvitation(
       +inviteeId,
@@ -49,8 +49,8 @@ export class InvitationController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.OK)
   async cancelInvitation(
-    @Param('companyId') companyId: number,
-    @Param('invitationId') invitationId: number,
+    @Param('companyId') companyId: string,
+    @Param('invitationId') invitationId: string,
   ): Promise<InvitationResponse> {
     return await this.invitationService.compCancelledInvitation(
       +companyId,
@@ -64,7 +64,7 @@ export class InvitationController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async getUserInvitations(
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
   ): Promise<AllInvitesResponse> {
     return this.invitationService.getAllUsersInvitations(+userId)
   }
@@ -74,8 +74,8 @@ export class InvitationController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async acceptInvitation(
-    @Param('userId') userId: number,
-    @Param('invitationId') invitationId: number,
+    @Param('userId') userId: string,
+    @Param('invitationId') invitationId: string,
   ): Promise<InvitationResponse> {
     return await this.invitationService.userAcceptsInvitation(
       +userId,
@@ -88,8 +88,8 @@ export class InvitationController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async declineInvitation(
-    @Param('userId') userId: number,
-    @Param('invitationId') invitationId: number,
+    @Param('userId') userId: string,
+    @Param('invitationId') invitationId: string,
   ): Promise<InvitationResponse> {
     return await this.invitationService.userDeclineInvitation(
       +userId,

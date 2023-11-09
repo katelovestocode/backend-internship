@@ -38,7 +38,7 @@ export class UserController {
   @Get(':id')
   @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
-  async getOneUser(@Param('id') id: number): Promise<UserResponse> {
+  async getOneUser(@Param('id') id: string): Promise<UserResponse> {
     return await this.userService.getOneUser(+id)
   }
 
@@ -56,7 +56,7 @@ export class UserController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async updateUser(
-    @Param('userId') id: number,
+    @Param('userId') id: string,
     @Body() updatedUser: UpdateUserDto,
   ): Promise<UserResponse> {
     return await this.userService.updateUser(+id, updatedUser)
@@ -66,7 +66,7 @@ export class UserController {
   @Delete(':userId')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
-  async removeUser(@Param('userId') id: number): Promise<DeletedUserResponse> {
+  async removeUser(@Param('userId') id: string): Promise<DeletedUserResponse> {
     return await this.userService.removeUser(+id)
   }
 
@@ -75,8 +75,8 @@ export class UserController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async leaveCompany(
-    @Param('userId') userId: number,
-    @Param('companyId') companyId: number,
+    @Param('userId') userId: string,
+    @Param('companyId') companyId: string,
   ): Promise<CompanyResponse> {
     return this.userService.userLeavesCompany(+userId, +companyId)
   }

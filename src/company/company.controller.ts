@@ -80,8 +80,8 @@ export class CompanyController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.OK)
   async removeMemberFromCompany(
-    @Param('companyId') companyId: number,
-    @Param('userId') userId: number,
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
   ): Promise<CompanyResponse> {
     return this.companyService.ownerRemoveUserFromCompany(+companyId, +userId)
   }

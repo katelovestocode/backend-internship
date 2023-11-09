@@ -32,7 +32,7 @@ export class UserService {
     try {
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved all users',
         details: {
           users: await this.userRepository.find(),
         },
@@ -52,7 +52,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved one user',
         details: {
           user: oneUser,
         },
@@ -76,7 +76,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.CREATED,
-        result: 'success',
+        result: 'User successfully has been created',
         details: {
           user: newUser,
         },
@@ -116,7 +116,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'User successfully has been updated',
         details: {
           user: newlyUpdatedUser,
         },
@@ -137,7 +137,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'User successfully has been removed',
         details: {
           user: id,
         },
@@ -163,7 +163,7 @@ export class UserService {
   ): Promise<CompanyResponse> {
     try {
       const company = await this.companyRepository.findOne({
-        where: { id: +companyId },
+        where: { id: companyId },
         relations: ['members'],
       })
 
@@ -184,7 +184,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'User successfully left the company',
         details: {
           company: updated,
         },

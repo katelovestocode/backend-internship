@@ -23,7 +23,7 @@ export class RequestController {
   @Get('/users/:userId/requests')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
-  async getUserRequests(@Param('userId') userId: number): Promise<AllRequests> {
+  async getUserRequests(@Param('userId') userId: string): Promise<AllRequests> {
     return this.requestService.allUsersRequestsToJoin(+userId)
   }
 
@@ -32,8 +32,8 @@ export class RequestController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.CREATED)
   async sendJoinRequest(
-    @Param('userId') userId: number,
-    @Param('companyId') companyId: number,
+    @Param('userId') userId: string,
+    @Param('companyId') companyId: string,
   ): Promise<JoinRequest> {
     return await this.requestService.userSendsJoinRequest(+companyId, +userId)
   }
@@ -43,8 +43,8 @@ export class RequestController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async cancelJoinRequest(
-    @Param('userId') userId: number,
-    @Param('requestId') requestId: number,
+    @Param('userId') userId: string,
+    @Param('requestId') requestId: string,
   ): Promise<JoinRequest> {
     return await this.requestService.userCancelledJoinRequest(
       +userId,
@@ -58,7 +58,7 @@ export class RequestController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.OK)
   async getCompanyRequests(
-    @Param('companyId') companyId: number,
+    @Param('companyId') companyId: string,
   ): Promise<AllRequests> {
     return this.requestService.getAllCompanyRequests(+companyId)
   }
@@ -68,8 +68,8 @@ export class RequestController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.OK)
   async acceptJoinRequest(
-    @Param('companyId') companyId: number,
-    @Param('requestId') requestId: number,
+    @Param('companyId') companyId: string,
+    @Param('requestId') requestId: string,
   ): Promise<JoinRequest> {
     return await this.requestService.companyAcceptsJoinRequest(
       +companyId,
@@ -82,8 +82,8 @@ export class RequestController {
   @UseGuards(AuthGuard(['jwt', 'auth0']), CompanyValidGuard)
   @HttpCode(HttpStatus.OK)
   async declineJoinRequest(
-    @Param('companyId') companyId: number,
-    @Param('requestId') requestId: number,
+    @Param('companyId') companyId: string,
+    @Param('requestId') requestId: string,
   ): Promise<JoinRequest> {
     return await this.requestService.companyDeclinesJoinRequest(
       +companyId,
