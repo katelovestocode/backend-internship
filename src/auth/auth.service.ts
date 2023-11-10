@@ -112,7 +112,7 @@ export class AuthService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'You have been successfully logged-in',
         details: {
           user: { ...user, accessToken, refreshToken, actionToken },
         },
@@ -159,11 +159,15 @@ export class AuthService {
         updatedAt,
         auth,
         companies,
+        sentInvitations,
+        receivedInvitations,
+        sentRequests,
+        reqCompanies,
       } = await this.userService.getUserByEmail(user.email)
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Current Users information has been retrieved',
         details: {
           user: {
             id,
@@ -174,6 +178,10 @@ export class AuthService {
             createdAt,
             updatedAt,
             auth,
+            sentInvitations,
+            receivedInvitations,
+            sentRequests,
+            reqCompanies,
           },
         },
       }

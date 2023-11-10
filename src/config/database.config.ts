@@ -12,8 +12,6 @@ export default registerAs('database', () => ({
   migrations: [__dirname + '/../../db/migrations/*{.ts,.js}'],
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   autoLoadEntities: true,
-
- 
 }))
 
 export { default as DatabaseConfig } from './database.config'

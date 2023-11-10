@@ -47,7 +47,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.CREATED,
-        result: 'success',
+        result: 'Company successfully has been created',
         details: {
           company: newCompany,
         },
@@ -61,7 +61,7 @@ export class CompanyService {
     try {
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved all companies',
         details: {
           companies: await this.companyRepository.find(),
         },
@@ -81,7 +81,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved one company',
         details: {
           company: oneCompany,
         },
@@ -110,7 +110,7 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully updated company information',
         details: {
           company: newlyUpdatedCompany,
         },
@@ -131,9 +131,46 @@ export class CompanyService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully removed the company',
         details: {
           company: id,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  async ownerRemoveUserFromCompany(
+    companyId: number,
+    userId: number,
+  ): Promise<CompanyResponse> {
+    try {
+      const company = await this.companyRepository.findOne({
+        where: { id: companyId },
+        relations: ['owner', 'members'],
+      })
+
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
+      const userToRemove = company.members.find((user) => user.id === userId)
+
+      if (!userToRemove) {
+        throw new NotFoundException(
+          'User is not found in the company members list',
+        )
+      }
+
+      company.members = company.members.filter((user) => user.id !== userId)
+      const updated = await this.companyRepository.save(company)
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'Companys owner successfully removed the user',
+        details: {
+          company: updated,
         },
       }
     } catch (error) {

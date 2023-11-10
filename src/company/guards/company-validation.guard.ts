@@ -20,7 +20,8 @@ export class CompanyValidGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest()
-    const { id } = request.params
+
+    const companyId = request.params['companyId']
     const reqEmail = request.user['email']
 
     if (context.getType() !== 'http') {
@@ -28,7 +29,7 @@ export class CompanyValidGuard implements CanActivate {
     }
 
     const company = await this.companyRepository.findOne({
-      where: { id: +id },
+      where: { id: +companyId },
       relations: ['owner'],
     })
     const user = await this.userRepository.findOne({
@@ -45,7 +46,7 @@ export class CompanyValidGuard implements CanActivate {
 
     if (company.owner.id !== user.id) {
       throw new UnauthorizedException(
-        'You can only update and delete your own companies',
+        'You can only update, delete and see your own companies',
       )
     }
 

@@ -16,19 +16,23 @@ import {
   AllUsersResponse,
 } from './types/user.types'
 import * as bcrypt from 'bcrypt'
+import { Company } from 'src/company/entities/company.entity'
+import { CompanyResponse } from 'src/company/types/types'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Company)
+    private readonly companyRepository: Repository<Company>,
   ) {}
 
   async getAllUsers(): Promise<AllUsersResponse> {
     try {
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved all users',
         details: {
           users: await this.userRepository.find(),
         },
@@ -48,7 +52,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'Successfully retrieved one user',
         details: {
           user: oneUser,
         },
@@ -72,7 +76,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.CREATED,
-        result: 'success',
+        result: 'User successfully has been created',
         details: {
           user: newUser,
         },
@@ -112,7 +116,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'User successfully has been updated',
         details: {
           user: newlyUpdatedUser,
         },
@@ -133,7 +137,7 @@ export class UserService {
 
       return {
         status_code: HttpStatus.OK,
-        result: 'success',
+        result: 'User successfully has been removed',
         details: {
           user: id,
         },
@@ -148,6 +152,43 @@ export class UserService {
       return await this.userRepository.findOne({
         where: { email },
       })
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  async userLeavesCompany(
+    userId: number,
+    companyId: number,
+  ): Promise<CompanyResponse> {
+    try {
+      const company = await this.companyRepository.findOne({
+        where: { id: companyId },
+        relations: ['members'],
+      })
+
+      if (!company) {
+        throw new NotFoundException('Company is not found')
+      }
+
+      const userToRemove = company.members.find((user) => user.id === userId)
+
+      if (!userToRemove) {
+        throw new NotFoundException(
+          'User is not found in the company members list',
+        )
+      }
+
+      company.members = company.members.filter((user) => user.id !== userId)
+      const updated = await this.companyRepository.save(company)
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'User successfully left the company',
+        details: {
+          company: updated,
+        },
+      }
     } catch (error) {
       throw new InternalServerErrorException(error.message)
     }

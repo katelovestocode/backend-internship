@@ -11,14 +11,15 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 @Injectable()
-export class ValidationGuard implements CanActivate {
+export class UserValidGuard implements CanActivate {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest()
-    const { id } = request.params
+
+    const userId = request.params['userId']
     const reqEmail = request.user['email']
 
     if (context.getType() !== 'http') {
@@ -26,7 +27,7 @@ export class ValidationGuard implements CanActivate {
     }
 
     const user = await this.userRepository.findOne({
-      where: { id: +id },
+      where: { id: +userId },
     })
 
     if (!user) {
@@ -34,7 +35,9 @@ export class ValidationGuard implements CanActivate {
     }
 
     if (reqEmail !== user.email) {
-      throw new UnauthorizedException('You can only update your own profile')
+      throw new UnauthorizedException(
+        'You can only update and see your own profile',
+      )
     }
 
     return true
