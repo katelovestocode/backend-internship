@@ -12,6 +12,7 @@ import {
   OneToMany,
   ManyToMany,
 } from 'typeorm'
+import { Quiz } from 'src/quizzes/entities/quiz.entity'
 
 @Entity('companies')
 export class Company {
@@ -41,6 +42,10 @@ export class Company {
   @ManyToMany(() => User, (user) => user.adminCompanies)
   @JoinTable()
   admins: User[];
+
+  // company quizzes
+  @OneToMany(() => Quiz, (quiz) => quiz.company, { cascade: true })
+  quizzes: Quiz[];
 
   @CreateDateColumn()
   createdAt: Date
