@@ -8,6 +8,8 @@ import { DatabaseConfig } from './config/database.config'
 import { CompanyModule } from './company/company.module'
 import { RequestModule } from './requests/request.module'
 import { InvitationModule } from './invitations/invitation.module'
+import { QuizModule } from './quizzes/quiz.module'
+import { QuestionModule } from './questions/question.module'
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { InvitationModule } from './invitations/invitation.module'
     CompanyModule,
     RequestModule,
     InvitationModule,
+    QuizModule, 
+    QuestionModule
   ],
   controllers: [],
   providers: [],
