@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Question } from '../../questions/entities/question.entity'
-import { UserQuizResult } from 'src/user_quiz_results/entities/user_quiz_results.entity'
+import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
 
 @Entity('quizzes')
 export class Quiz {
@@ -30,6 +30,6 @@ export class Quiz {
   company: Company
 
   // user's quiz results
-  @OneToMany(() => UserQuizResult, (userResult) => userResult.quiz)
-  userResults: UserQuizResult[]
+  @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.quiz)
+  quizAttempts: QuizAttempt[]
 }

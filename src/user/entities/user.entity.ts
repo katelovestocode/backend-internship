@@ -2,7 +2,7 @@ import { Auth } from 'src/auth/entities/auth.entity'
 import { Company } from 'src/company/entities/company.entity'
 import { Invitation } from 'src/invitations/entities/invitation.entity'
 import { Request } from 'src/requests/entities/request.entity'
-import { UserQuizResult } from 'src/user_quiz_results/entities/user_quiz_results.entity'
+import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
 import {
   Column,
   CreateDateColumn,
@@ -50,20 +50,20 @@ export class User {
 
   // user is an admin of the company
   @ManyToMany(() => Company, (company) => company.admins)
-  adminCompanies: Company[];
+  adminCompanies: Company[]
 
   // user's quiz results
-  @OneToMany(() => UserQuizResult, (userQuizResult) => userQuizResult.user)
-  quizResults: UserQuizResult[];
+  @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.user)
+  quizAttempts: QuizAttempt[]
 
   // average users score in the company
-  @Column({ default: 0 })
-  averageScoreWithinCompany: number;
+  @Column({ default: 0, type: 'float' })
+  averageScoreWithinCompany: number
 
   // overall user's rating in the system
-  @Column({ default: 0 })
-  overallRatingAcrossSystem: number;
-  
+  @Column({ default: 0, type: 'float' })
+  overallRatingAcrossSystem: number
+
   @CreateDateColumn()
   createdAt: Date
 
