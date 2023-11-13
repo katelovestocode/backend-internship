@@ -3,7 +3,6 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common'
 import { Request } from 'express'
@@ -13,7 +12,7 @@ import { Company } from '../entities/company.entity'
 import { User } from 'src/user/entities/user.entity'
 
 @Injectable()
-export class CompanyValidGuard implements CanActivate {
+export class AdminOrOwnerValidGuard implements CanActivate {
   constructor(
     @InjectRepository(Company) private companyRepository: Repository<Company>,
     @InjectRepository(User) private userRepository: Repository<User>,
@@ -32,8 +31,9 @@ export class CompanyValidGuard implements CanActivate {
     try {
       const company = await this.companyRepository.findOne({
         where: { id: +companyId },
-        relations: ['owner'],
+        relations: ['admins', 'owner'],
       })
+
       const user = await this.userRepository.findOne({
         where: { email: reqEmail },
       })
@@ -46,15 +46,20 @@ export class CompanyValidGuard implements CanActivate {
         throw new BadRequestException('User is not found')
       }
 
-      if (company.owner.id !== user.id) {
+      const isAdmin = company.admins.some((admin) => admin.id === user.id)
+
+      if (!isAdmin && company.owner.id !== user.id) {
         throw new UnauthorizedException(
-          'You can only update, delete and see your own companies',
+          'You do not have the necessary permissions.',
         )
       }
 
       return true
     } catch (error) {
-      throw new InternalServerErrorException(error.message)
+      if (error.name === 'EntityNotFound') {
+        throw new BadRequestException('Invalid company or user.')
+      }
+      throw error
     }
   }
 }
