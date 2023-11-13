@@ -15,7 +15,6 @@ import { AuthGuard } from '@nestjs/passport'
 import { CreateQuizDto } from './dto/create-quiz.dto'
 import { AdminOrOwnerValidGuard } from 'src/company/guards/admin-validation.guard'
 import { UpdateQuizDto } from './dto/update-quiz.dto'
-import { Quiz } from './entities/quiz.entity'
 import { AllQuizzesResponse, DeletedQuizRes, QuizResponse } from './types/types'
 
 @Controller('quizzes')

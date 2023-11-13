@@ -10,6 +10,8 @@ import { RequestModule } from './requests/request.module'
 import { InvitationModule } from './invitations/invitation.module'
 import { QuizModule } from './quizzes/quiz.module'
 import { QuestionModule } from './questions/question.module'
+import { QuizAttemptModule } from './quiz_attempts/quiz_attempt.module'
+
 
 @Module({
   imports: [
@@ -32,7 +34,8 @@ import { QuestionModule } from './questions/question.module'
     RequestModule,
     InvitationModule,
     QuizModule, 
-    QuestionModule
+    QuestionModule,
+    QuizAttemptModule
   ],
   controllers: [],
   providers: [],

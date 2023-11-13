@@ -13,7 +13,7 @@ import {
   ManyToMany,
 } from 'typeorm'
 import { Quiz } from 'src/quizzes/entities/quiz.entity'
-import { UserQuizResult } from 'src/user_quiz_results/entities/user_quiz_results.entity'
+import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
 
 @Entity('companies')
 export class Company {
@@ -49,8 +49,8 @@ export class Company {
   quizzes: Quiz[]
 
   // user's quiz results associated with company
-  @OneToMany(() => UserQuizResult, (userQuizResult) => userQuizResult.company)
-  userQuizResults: UserQuizResult[]
+  @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.company)
+  quizAttempts: QuizAttempt[]
 
   @CreateDateColumn()
   createdAt: Date
