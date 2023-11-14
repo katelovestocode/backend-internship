@@ -271,7 +271,7 @@ export class InvitationService {
         throw new NotFoundException('Invitation is already declined')
       }
 
-       if (invitation.status !== 'pending') {
+      if (invitation.status !== 'pending') {
         throw new BadRequestException('Invitation is not in pending status')
       }
 

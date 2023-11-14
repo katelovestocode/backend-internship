@@ -165,8 +165,6 @@ export class AuthService {
         reqCompanies,
         adminCompanies,
         quizAttempts,
-        averageScoreWithinCompany,
-        overallRatingAcrossSystem,
       } = await this.userService.getUserByEmail(user.email)
 
       return {
@@ -188,8 +186,6 @@ export class AuthService {
             reqCompanies,
             adminCompanies,
             quizAttempts,
-            averageScoreWithinCompany,
-            overallRatingAcrossSystem,
           },
         },
       }

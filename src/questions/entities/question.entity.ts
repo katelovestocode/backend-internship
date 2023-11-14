@@ -4,17 +4,17 @@ import { Quiz } from '../../quizzes/entities/quiz.entity'
 @Entity('questions')
 export class Question {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  question: string;
+  question: string
 
   @Column('text', { array: true })
-  answers: string[];
+  answers: string[]
 
   @Column()
-  correctAnswer: string;
+  correctAnswer: string
 
   @ManyToOne(() => Quiz, (quiz) => quiz.questions)
-  quiz: Quiz;
+  quiz: Quiz
 }

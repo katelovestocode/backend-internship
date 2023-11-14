@@ -61,7 +61,7 @@ export class QuizController {
     @Param('quizId') quizId: string,
     @Param('companyId') companyId: string,
     @Body() updateQuizDto: UpdateQuizDto,
-  ): Promise<QuizResponse>{
+  ): Promise<QuizResponse> {
     return await this.quizService.updateQuiz(+quizId, +companyId, updateQuizDto)
   }
 

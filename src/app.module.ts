@@ -12,7 +12,6 @@ import { QuizModule } from './quizzes/quiz.module'
 import { QuestionModule } from './questions/question.module'
 import { QuizAttemptModule } from './quiz_attempts/quiz_attempt.module'
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,9 +32,9 @@ import { QuizAttemptModule } from './quiz_attempts/quiz_attempt.module'
     CompanyModule,
     RequestModule,
     InvitationModule,
-    QuizModule, 
+    QuizModule,
     QuestionModule,
-    QuizAttemptModule
+    QuizAttemptModule,
   ],
   controllers: [],
   providers: [],

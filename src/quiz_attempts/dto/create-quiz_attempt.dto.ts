@@ -13,5 +13,3 @@ export class CreateQuizAttemptDto {
   @IsNotEmpty()
   questions: AnswerDto[]
 }
-
-

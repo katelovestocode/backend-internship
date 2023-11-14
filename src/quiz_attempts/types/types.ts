@@ -9,5 +9,3 @@ export type QuizAttemptRes = {
 export type QuizAttemptDetails = {
   quiz: QuizAttempt
 }
-
-
