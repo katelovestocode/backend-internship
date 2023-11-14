@@ -25,8 +25,19 @@ export class QuizAttempt {
     isCorrect: boolean
   }>
 
-  @Column({ type: 'float' })
-  score: number
+  @Column({ default: 0 })
+  totalQuestions: number
+
+  @Column({ default: 0 })
+  totalCorrect: number
+
+  // average users score in the company
+  @Column({ default: 0, type: 'float' })
+  averageScoreWithinCompany: number
+
+  // overall user's rating in the system
+  @Column({ default: 0, type: 'float' })
+  overallRatingAcrossSystem: number
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date

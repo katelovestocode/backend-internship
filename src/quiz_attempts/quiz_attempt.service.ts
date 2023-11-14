@@ -40,6 +40,7 @@ export class QuizAttemptService {
 
       const user = await this.userRepository.findOne({
         where: { id: userId },
+        relations: ['quizAttempts', 'quizAttempts.quiz.company'],
       })
 
       if (!user) {
@@ -51,8 +52,6 @@ export class QuizAttemptService {
         quiz,
         createQuizAttemptDto,
       )
-
-      await this.calculateStatistics(userId, quiz)
 
       return {
         status_code: HttpStatus.CREATED,
@@ -74,9 +73,6 @@ export class QuizAttemptService {
     try {
       const { questions } = createQuizAttemptDto
 
-      let totalCorrect = 0
-      let totalQuestions = 0
-
       const questionResponses: Array<{
         id: number
         question: string
@@ -88,7 +84,7 @@ export class QuizAttemptService {
         return str.trim().toLowerCase()
       }
 
-      for (const userAnswer of questions) {
+      questions.forEach((userAnswer) => {
         const question = quiz.questions.find((q) => q.id === userAnswer.id)
 
         if (question) {
@@ -103,24 +99,34 @@ export class QuizAttemptService {
             answer: userAnswer.answer,
             isCorrect,
           })
-
-          if (isCorrect) {
-            totalCorrect++
-          }
-
-          totalQuestions++
         }
-      }
+      })
 
-      const score =
-        totalQuestions > 0
-          ? parseFloat(((totalCorrect / totalQuestions) * 100).toFixed(2))
-          : 0
+      const totalQuestions = questionResponses.length
+      const totalCorrect = questionResponses.filter(
+        (response) => response.isCorrect,
+      ).length
+
+      const averageScoreWithinCompany = await this.calculateAvarageInCompany(
+        user,
+        quiz,
+        totalCorrect,
+        totalQuestions,
+      )
+
+      const overallRatingAcrossSystem = await this.calculateRatingInSystem(
+        user,
+        totalCorrect,
+        totalQuestions,
+      )
 
       const userQuizResult = this.quizAttemptRepository.create({
         user,
         quiz,
-        score,
+        totalQuestions,
+        totalCorrect,
+        averageScoreWithinCompany,
+        overallRatingAcrossSystem,
         company: quiz.company,
         questionResponses,
         timestamp: new Date(),
@@ -134,68 +140,94 @@ export class QuizAttemptService {
     }
   }
 
-  private async calculateStatistics(userId: number, quiz) {
+  // average within a company
+  private async calculateAvarageInCompany(
+    user: User,
+    quiz: Quiz,
+    totalCorrect: number,
+    totalQuestions: number,
+  ) {
     try {
-      const user = await this.userRepository.findOne({
-        where: { id: userId },
-        relations: [
-          'quizAttempts',
-          'quizAttempts.quiz',
-          'quizAttempts.quiz.company',
-        ],
-      })
-
-      if (!user) {
-        throw new NotFoundException('User is not found')
-      }
-
       const companyQuizAttempts = user.quizAttempts.filter(
         (attempt) => attempt.quiz.company.id === quiz.company.id,
       )
 
-      const averageScoreWithinCompany =
-        companyQuizAttempts.reduce((sum, attempt) => sum + attempt.score, 0) /
-        companyQuizAttempts.length
-
-      user.averageScoreWithinCompany = Number(
-        averageScoreWithinCompany.toFixed(2),
+      let totalCorrectWithinCompany = companyQuizAttempts.reduce(
+        (sum, attempt) => sum + attempt.totalCorrect,
+        0,
       )
 
-      //   // Calculate and update overallRatingAcrossSystem
-      //   const allQuizAttempts = user.quizAttempts
-      //   const overallRatingAcrossSystem =
-      //     allQuizAttempts.reduce((sum, attempt) => sum + attempt.score, 0) /
-      //     allQuizAttempts.length
+      let totalQuestionsWithinCompany = companyQuizAttempts.reduce(
+        (sum, attempt) => sum + attempt.totalQuestions,
+        0,
+      )
 
-      //   user.overallRatingAcrossSystem = Number(overallRatingAcrossSystem)
+      totalCorrectWithinCompany += totalCorrect
+      totalQuestionsWithinCompany += totalQuestions
 
+      const averageScoreWithinCompany =
+        totalQuestionsWithinCompany > 0
+          ? parseFloat(
+              (
+                (totalCorrectWithinCompany / totalQuestionsWithinCompany) *
+                100
+              ).toFixed(2),
+            )
+          : 0
+      return averageScoreWithinCompany
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  // average accross the system
+  private async calculateRatingInSystem(
+    user: User,
+    totalCorrect: number,
+    totalQuestions: number,
+  ) {
+    try {
       const allUsers = await this.userRepository.find({
-        relations: ['quizAttempts'],
+        relations: ['quizAttempts', 'quizAttempts.quiz.company'],
       })
 
+      const totalCorrectAcrossSystem = allUsers.reduce((sum, currentUser) => {
+        let userTotalCorrect = currentUser.quizAttempts.reduce(
+          (userSum, attempt) => userSum + attempt.totalCorrect,
+          0,
+        )
+
+        if (currentUser.id === user.id) {
+          userTotalCorrect += totalCorrect
+        }
+
+        return sum + userTotalCorrect
+      }, 0)
+
+      const totalQuestionsAcrossSystem = allUsers.reduce((sum, currentUser) => {
+        let userTotalQuestions = currentUser.quizAttempts.reduce(
+          (userSum, attempt) => userSum + attempt.totalQuestions,
+          0,
+        )
+
+        if (currentUser.id === user.id) {
+          userTotalQuestions += totalQuestions
+        }
+
+        return sum + userTotalQuestions
+      }, 0)
+
       const overallRatingAcrossSystem =
-        allUsers.reduce((sum, currentUser) => {
-          // Exclude the current user from the calculation
-          if (
-            currentUser.id !== user.id &&
-            currentUser.quizAttempts.length > 0
-          ) {
-            const userAverageScore =
-              currentUser.quizAttempts.reduce(
-                (userSum, attempt) => userSum + attempt.score,
-                0,
-              ) / currentUser.quizAttempts.length
+        totalQuestionsAcrossSystem > 0
+          ? parseFloat(
+              (
+                (totalCorrectAcrossSystem / totalQuestionsAcrossSystem) *
+                100
+              ).toFixed(2),
+            )
+          : 0
 
-            return sum + userAverageScore
-          }
-          return sum
-        }, 0) / Math.max(allUsers.length - 1, 1)
-
-      user.overallRatingAcrossSystem = Number(
-        overallRatingAcrossSystem.toFixed(2),
-      )
-
-      await this.userRepository.save(user)
+      return overallRatingAcrossSystem
     } catch (error) {
       throw new InternalServerErrorException(error.message)
     }

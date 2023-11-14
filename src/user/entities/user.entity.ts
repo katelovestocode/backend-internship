@@ -56,14 +56,6 @@ export class User {
   @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.user)
   quizAttempts: QuizAttempt[]
 
-  // average users score in the company
-  @Column({ default: 0, type: 'float' })
-  averageScoreWithinCompany: number
-
-  // overall user's rating in the system
-  @Column({ default: 0, type: 'float' })
-  overallRatingAcrossSystem: number
-
   @CreateDateColumn()
   createdAt: Date
 
