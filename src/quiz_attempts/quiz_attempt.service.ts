@@ -11,6 +11,7 @@ import { QuizAttempt } from './entities/quiz_attempt.entity'
 import { CreateQuizAttemptDto } from './dto/create-quiz_attempt.dto'
 import { User } from 'src/user/entities/user.entity'
 import { QuizAttemptRes } from './types/types'
+import { RedisService } from 'src/redis/redis.service'
 
 @Injectable()
 export class QuizAttemptService {
@@ -21,6 +22,7 @@ export class QuizAttemptService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(QuizAttempt)
     private readonly quizAttemptRepository: Repository<QuizAttempt>,
+    private readonly redisService: RedisService,
   ) {}
 
   async userSubmitsQuiz(
@@ -69,7 +71,7 @@ export class QuizAttemptService {
     user: User,
     quiz: Quiz,
     createQuizAttemptDto: CreateQuizAttemptDto,
-  ) {
+  ): Promise<QuizAttempt> {
     try {
       const { questions } = createQuizAttemptDto
 
@@ -132,7 +134,23 @@ export class QuizAttemptService {
         timestamp: new Date(),
       })
 
+      // check for cache first
+      const cachedResponse = await this.redisService.get(
+        `quiz_responses:${user.id}:${quiz.id}:${quiz.company}`,
+      )
+
+      if (cachedResponse) {
+        return cachedResponse
+      }
+
+      // otherwise set into database and into Redis
       await this.quizAttemptRepository.save(userQuizResult)
+
+      this.redisService.set(
+        `quiz_responses:${user.id}:${quiz.id}:${quiz.company}`,
+        userQuizResult,
+        48 * 60 * 60,
+      )
 
       return userQuizResult
     } catch (error) {

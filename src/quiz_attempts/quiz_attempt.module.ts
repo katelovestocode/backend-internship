@@ -12,6 +12,8 @@ import { QuizAttemptController } from './quiz_attempt.controller'
 import { QuizAttempt } from './entities/quiz_attempt.entity'
 import { QuizService } from 'src/quizzes/quiz.service'
 import { QuestionService } from 'src/questions/question.service'
+import { RedisModule } from 'src/redis/redis.module'
+import { RedisService } from 'src/redis/redis.service'
 
 @Module({
   imports: [
@@ -24,10 +26,11 @@ import { QuestionService } from 'src/questions/question.service'
       Quiz,
       Question,
       QuizAttempt,
+      RedisModule,
     ]),
   ],
   controllers: [QuizAttemptController],
-  providers: [QuizAttemptService, QuizService, QuestionService],
+  providers: [QuizAttemptService, QuizService, QuestionService, RedisService],
   exports: [QuizAttemptService],
 })
 export class QuizAttemptModule {}
