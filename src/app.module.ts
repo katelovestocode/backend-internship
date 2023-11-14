@@ -11,6 +11,7 @@ import { InvitationModule } from './invitations/invitation.module'
 import { QuizModule } from './quizzes/quiz.module'
 import { QuestionModule } from './questions/question.module'
 import { QuizAttemptModule } from './quiz_attempts/quiz_attempt.module'
+import { RedisModule } from './redis/redis.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { QuizAttemptModule } from './quiz_attempts/quiz_attempt.module'
     QuizModule,
     QuestionModule,
     QuizAttemptModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [],
