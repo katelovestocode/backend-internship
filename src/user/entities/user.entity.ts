@@ -2,6 +2,7 @@ import { Auth } from 'src/auth/entities/auth.entity'
 import { Company } from 'src/company/entities/company.entity'
 import { Invitation } from 'src/invitations/entities/invitation.entity'
 import { Request } from 'src/requests/entities/request.entity'
+import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
 import {
   Column,
   CreateDateColumn,
@@ -49,8 +50,12 @@ export class User {
 
   // user is an admin of the company
   @ManyToMany(() => Company, (company) => company.admins)
-  adminCompanies: Company[];
-  
+  adminCompanies: Company[]
+
+  // user's quiz results
+  @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.user)
+  quizAttempts: QuizAttempt[]
+
   @CreateDateColumn()
   createdAt: Date
 

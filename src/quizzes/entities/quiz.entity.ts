@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Question } from '../../questions/entities/question.entity'
+import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
 
 @Entity('quizzes')
 export class Quiz {
@@ -27,4 +28,8 @@ export class Quiz {
 
   @ManyToOne(() => Company, (company) => company.quizzes)
   company: Company
+
+  // user's quiz results
+  @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.quiz)
+  quizAttempts: QuizAttempt[]
 }

@@ -13,6 +13,7 @@ import {
   ManyToMany,
 } from 'typeorm'
 import { Quiz } from 'src/quizzes/entities/quiz.entity'
+import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
 
 @Entity('companies')
 export class Company {
@@ -41,11 +42,15 @@ export class Company {
 
   @ManyToMany(() => User, (user) => user.adminCompanies)
   @JoinTable()
-  admins: User[];
+  admins: User[]
 
   // company quizzes
   @OneToMany(() => Quiz, (quiz) => quiz.company, { cascade: true })
-  quizzes: Quiz[];
+  quizzes: Quiz[]
+
+  // user's quiz results associated with company
+  @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.company)
+  quizAttempts: QuizAttempt[]
 
   @CreateDateColumn()
   createdAt: Date
