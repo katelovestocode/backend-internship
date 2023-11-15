@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common'
 import { Cache } from 'cache-manager'
-import { CachedDataType } from './types'
+import { CachedDataType } from './interface/interface'
 
 @Injectable()
 export class RedisService {
