@@ -148,7 +148,7 @@ export class QuizAttemptService {
 
       this.redisService.set(
         `quiz_responses:${user.id}:${quiz.id}:${quiz.company}`,
-        userQuizResult,
+        { user: user, quiz: quiz, company: quiz.company, questionResponses },
         48 * 60 * 60,
       )
 
