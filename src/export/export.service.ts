@@ -27,7 +27,7 @@ export class ExportService {
   // user can get their own quiz results
   async exportUserQuizResults(
     userId: number,
-    fileType: string,
+    type: string,
   ): Promise<QuizAttemptRes> {
     try {
       const user = await this.userRepository.findOne({
@@ -39,15 +39,15 @@ export class ExportService {
         throw new NotFoundException('User is not found')
       }
 
-      const key = `quiz_attempts:${userId}:${fileType}`
+      const key = `quiz_attempts:${userId}:${type}`
       const cachedData = await this.redisService.get(key)
 
       if (!cachedData) {
         let exportedData
 
-        if (fileType === 'json') {
+        if (type === 'json') {
           exportedData = user.quizAttempts
-        } else if (fileType === 'csv') {
+        } else if (type === 'csv') {
           const quizAttemptsData = user.quizAttempts.map((attempt) => ({
             id: attempt.id,
             questionResponses: attempt.questionResponses.map((response) => ({
@@ -104,7 +104,7 @@ export class ExportService {
   async exportOneUserQuizResults(
     companyId: number,
     userId: number,
-    fileType: string,
+    type: string,
   ): Promise<QuizAttemptRes> {
     try {
       const user = await this.userRepository.findOne({
@@ -125,15 +125,15 @@ export class ExportService {
         (attempt) => attempt.quiz.company.id === companyId,
       )
 
-      const key = `quiz_attempts:${userId}:${companyId}:${fileType}`
+      const key = `quiz_attempts:${userId}:${companyId}:${type}`
       const cachedData = await this.redisService.get(key)
 
       if (!cachedData) {
         let exportedData
 
-        if (fileType === 'json') {
+        if (type === 'json') {
           exportedData = user.quizAttempts
-        } else if (fileType === 'csv') {
+        } else if (type === 'csv') {
           const quizAttemptsData = user.quizAttempts.map((attempt) => ({
             id: attempt.id,
             questionResponses: attempt.questionResponses.map((response) => ({
@@ -195,7 +195,7 @@ export class ExportService {
   // company owner or admin can get company related user's quiz results
   async exportAllQuizResults(
     companyId: number,
-    fileType: string,
+    type: string,
   ): Promise<QuizAttemptRes> {
     try {
       const company = await this.companyRepository.findOne({
@@ -217,15 +217,15 @@ export class ExportService {
         (attempt) => attempt.quiz.company.id === companyId,
       )
 
-      const key = `quiz_attempts_all_users:${companyId}:${fileType}`
+      const key = `quiz_attempts_all_users:${companyId}:${type}`
       const cachedData = await this.redisService.get(key)
 
       if (!cachedData) {
         let exportedData
 
-        if (fileType === 'json') {
+        if (type === 'json') {
           exportedData = company.quizAttempts
-        } else if (fileType === 'csv') {
+        } else if (type === 'csv') {
           const quizAttemptsData = company.quizAttempts.map((attempt) => ({
             id: attempt.id,
             questionResponses: attempt.questionResponses.map((response) => ({
@@ -289,7 +289,7 @@ export class ExportService {
     companyId: number,
     userId: number,
     quizId: number,
-    fileType: string,
+    type: string,
   ): Promise<QuizAttemptRes> {
     try {
       const user = await this.userRepository.findOne({
@@ -311,15 +311,15 @@ export class ExportService {
           attempt.quiz.company.id === companyId && attempt.quiz.id === quizId,
       )
 
-      const key = `quiz_attempts:${userId}:${companyId}:${quizId}:${fileType}`
+      const key = `quiz_attempts:${userId}:${companyId}:${quizId}:${type}`
       const cachedData = await this.redisService.get(key)
 
       if (!cachedData) {
         let exportedData
 
-        if (fileType === 'json') {
+        if (type === 'json') {
           exportedData = user.quizAttempts
-        } else if (fileType === 'csv') {
+        } else if (type === 'csv') {
           const quizAttemptsData = user.quizAttempts.map((attempt) => ({
             id: attempt.id,
             quizTitle: attempt.quiz.title,
