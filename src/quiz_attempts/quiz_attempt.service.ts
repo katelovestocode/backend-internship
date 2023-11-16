@@ -189,7 +189,7 @@ export class QuizAttemptService {
               (
                 (totalCorrectWithinCompany / totalQuestionsWithinCompany) *
                 100
-              ).toFixed(2),
+              ).toFixed(0),
             )
           : 0
       return averageScoreWithinCompany
@@ -241,7 +241,7 @@ export class QuizAttemptService {
               (
                 (totalCorrectAcrossSystem / totalQuestionsAcrossSystem) *
                 100
-              ).toFixed(2),
+              ).toFixed(0),
             )
           : 0
 
