@@ -12,7 +12,7 @@ import { QuizModule } from './quizzes/quiz.module'
 import { QuestionModule } from './questions/question.module'
 import { QuizAttemptModule } from './quiz_attempts/quiz_attempt.module'
 import { RedisModule } from './redis/redis.module'
-import { ExportModule } from './export/export.module';
+import { ExportModule } from './export/export.module'
 
 @Module({
   imports: [
