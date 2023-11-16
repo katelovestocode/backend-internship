@@ -1,4 +1,11 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  UseGuards,
+} from '@nestjs/common'
 import { AnalyticsService } from './analytics.service'
 import { AuthGuard } from '@nestjs/passport'
 import { UserValidGuard } from 'src/user/guards/validation.guard'
@@ -7,7 +14,7 @@ import { UserValidGuard } from 'src/user/guards/validation.guard'
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
-  // get user's avarage quiz result in the system
+  // get user's avarage rating of all quiz attempts in the system
   @Get('/users/:userId')
   @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
@@ -15,19 +22,22 @@ export class AnalyticsController {
     return await this.analyticsService.getUserAverage(+userId)
   }
 
-  // get user's list of avarage quiz result in the system
-  @Get('/users/:userId/all')
+  // get list of the avarage rating particular quiz attempt in all companies
+  @Get('/users/:userId/quizzes/:quizId')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
-  async getUserAllAnalytics(@Param('quizId') quizId: string) {
-    return await this.analyticsService.getUserAllAverage(+quizId)
+  async getUserQuizAnalytics(
+    @Param('quizId') quizId: string,
+    @Param('userId') userId: string,
+  ) {
+    return await this.analyticsService.getUserQuizAverages(+userId, +quizId)
   }
 
-  // get user's list quizzes
+  // get list of all user's quiz attempts
   @Get('/users/:userId/quizzes')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)
   async getUserAllQuizAnalytics(@Param('quizId') quizId: string) {
-    return await this.analyticsService.getUserAllQuizAnalysis(+quizId)
+    return await this.analyticsService.getUserAllQuizAverages(+quizId)
   }
 }
