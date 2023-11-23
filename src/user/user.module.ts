@@ -8,11 +8,15 @@ import { JwtService } from '@nestjs/jwt'
 import { Auth } from 'src/auth/entities/auth.entity'
 import { UserValidGuard } from './guards/validation.guard'
 import { Company } from 'src/company/entities/company.entity'
-
+import { NotificationsService } from 'src/notifications/notifications.service'
+import { Notification } from 'src/notifications/entities/notification.entity'
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Auth, Company]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Auth, Company, Notification]),
+    AuthModule,
+  ],
   controllers: [UserController],
-  providers: [UserService, JwtService, UserValidGuard],
+  providers: [UserService, JwtService, UserValidGuard, NotificationsService],
   exports: [UserService],
 })
 export class UserModule {}

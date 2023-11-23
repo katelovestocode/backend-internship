@@ -17,7 +17,7 @@ import {
   LoginResponse,
   UserResponse,
 } from 'src/user/types/user.types'
-import { RefreshResponse } from './types/auth.types'
+import { RefreshType } from './types/auth.types'
 import { CurrentUser } from 'src/user/decorators/currentUser'
 
 @Controller('auth')
@@ -36,12 +36,10 @@ export class AuthController {
     return await this.authService.login(loginDto)
   }
 
-  @Post('/refresh')
+  @Get('/refresh')
   @UseGuards(RefresJwtGuard)
   @HttpCode(HttpStatus.OK)
-  async refreshToken(
-    @CurrentUser() user: JwtPayload,
-  ): Promise<RefreshResponse> {
+  async refreshToken(@CurrentUser() user: JwtPayload): Promise<RefreshType> {
     return await this.authService.refreshTokens(user)
   }
 

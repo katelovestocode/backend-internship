@@ -6,5 +6,12 @@ export type JwtTokens = {
 
 export type RefreshResponse = JwtTokens & {
   email: string
+  name: string
   id: number
+}
+
+export type RefreshType = {
+  details: {
+    user: RefreshResponse
+  }
 }
