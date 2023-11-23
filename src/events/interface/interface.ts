@@ -1,7 +1,4 @@
-export interface Notification {
+export interface NotificationPayload {
   notification: string
-}
-
-export interface ServerToClientEvents {
-  newNotification: (payload: Notification) => void
+  userId: number
 }

@@ -217,11 +217,14 @@ export class QuizService {
             company,
             text,
           })
+
+          //send websocket notification
+          await this.eventsGateway.sendNotification({
+            userId: user.id,
+            notification: text,
+          })
         }),
       )
-
-      //send websocket notification
-      await this.eventsGateway.sendNotification({ notification: text })
     } catch (error) {
       throw new InternalServerErrorException(error.message)
     }
