@@ -9,7 +9,8 @@ import { Quiz } from 'src/quizzes/entities/quiz.entity'
 import { Request } from 'src/requests/entities/request.entity'
 import { QuestionController } from './question.controller'
 import { QuestionService } from './question.service'
-
+import { Notification } from 'src/notifications/entities/notification.entity'
+import { NotificationsService } from 'src/notifications/notifications.service'
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -20,10 +21,11 @@ import { QuestionService } from './question.service'
       Invitation,
       Quiz,
       Question,
+      Notification,
     ]),
   ],
   controllers: [QuestionController],
-  providers: [QuestionService],
+  providers: [QuestionService, NotificationsService],
   exports: [QuestionService],
 })
 export class QuestionModule {}

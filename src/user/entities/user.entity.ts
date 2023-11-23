@@ -3,6 +3,7 @@ import { Company } from 'src/company/entities/company.entity'
 import { Invitation } from 'src/invitations/entities/invitation.entity'
 import { Request } from 'src/requests/entities/request.entity'
 import { QuizAttempt } from 'src/quiz_attempts/entities/quiz_attempt.entity'
+import { Notification } from 'src/notifications/entities/notification.entity'
 import {
   Column,
   CreateDateColumn,
@@ -55,6 +56,9 @@ export class User {
   // user's quiz results
   @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.user)
   quizAttempts: QuizAttempt[]
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[]
 
   @CreateDateColumn()
   createdAt: Date
