@@ -1,9 +1,8 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
-import { Notification, ServerToClientEvents } from './interface/interface'
+import { NotificationPayload } from './interface/interface'
 import { WebsocketJwtGuard } from './guard/websocket-jwt.guard'
 import { Logger, UseGuards } from '@nestjs/common'
-import { SocketAuthMiddleware } from './middleware/ws.middleware'
 import { JwtService } from '@nestjs/jwt'
 
 @WebSocketGateway({
@@ -15,15 +14,27 @@ import { JwtService } from '@nestjs/jwt'
 @UseGuards(WebsocketJwtGuard)
 export class EventsGateway {
   constructor(private readonly jwtService: JwtService) {}
-  @WebSocketServer()
-  server: Server<any, ServerToClientEvents>
+  private readonly logger = new Logger(EventsGateway.name)
 
-  afterInit(client: Socket) {
-    client.use(SocketAuthMiddleware(this.jwtService) as any)
-    Logger.log('afterInit')
+  @WebSocketServer()
+  server: Server
+
+  async handleConnection(client: Socket): Promise<void> {
+    const user = await WebsocketJwtGuard.validateToken(this.jwtService, client)
+
+    if (user) {
+      await client.join(user.id.toString())
+      this.logger.log(`User ${user.id} is connected`)
+    } else {
+      client.disconnect()
+      this.logger.log(`User ${user.id} is disconnected`)
+    }
   }
 
-  async sendNotification(notification: Notification): Promise<void> {
-    this.server.emit('newNotification', notification)
+  async sendNotification({
+    userId,
+    notification,
+  }: NotificationPayload): Promise<void> {
+    await this.server.to(`${userId}`).emit('newNotification', notification)
   }
 }
