@@ -13,6 +13,7 @@ import { Company } from 'src/company/entities/company.entity'
 import { QuestionService } from 'src/questions/question.service'
 import { UpdateQuizDto } from './dto/update-quiz.dto'
 import { AllQuizzesResponse, DeletedQuizRes, QuizResponse } from './types/types'
+import { NotificationsService } from 'src/notifications/notifications.service'
 
 @Injectable()
 export class QuizService {
@@ -23,7 +24,8 @@ export class QuizService {
     private readonly questionRepository: Repository<Question>,
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
-    private questionService: QuestionService,
+    private readonly questionService: QuestionService,
+    readonly notificationsService: NotificationsService,
   ) {}
 
   // get all quizzes
@@ -89,6 +91,7 @@ export class QuizService {
 
       const company = await this.companyRepository.findOne({
         where: { id: companyId },
+        relations: ['members'],
       })
 
       if (!company) {
@@ -110,6 +113,9 @@ export class QuizService {
         where: { id: savedQuiz.id },
         relations: ['questions'],
       })
+
+      // send notification of the created quiz
+      await this.sendNewQuizNotification(company, newQuizz.title)
 
       return {
         status_code: HttpStatus.CREATED,
@@ -188,6 +194,29 @@ export class QuizService {
           quiz: quizId,
         },
       }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  // Send notification to all members of the company that the quiz has been created
+  async sendNewQuizNotification(company: Company, quizTitle: string) {
+    try {
+      if (!company.members) {
+        throw new NotFoundException('No members were found')
+      }
+
+      const text = `New quiz "${quizTitle}" has been created in the company ${company.name}`
+
+      await Promise.all(
+        company.members.map(async (user) => {
+          await this.notificationsService.createNewNotification({
+            user,
+            company,
+            text,
+          })
+        }),
+      )
     } catch (error) {
       throw new InternalServerErrorException(error.message)
     }

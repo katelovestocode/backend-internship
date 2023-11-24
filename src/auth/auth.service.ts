@@ -14,7 +14,7 @@ import { LoginDto } from './dto/login.dto'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Auth } from './entities/auth.entity'
-import { JwtTokens, RefreshResponse } from './types/auth.types'
+import { JwtTokens, RefreshType } from './types/auth.types'
 import { LoginResponse, UserResponse } from 'src/user/types/user.types'
 
 @Injectable()
@@ -123,7 +123,7 @@ export class AuthService {
   }
 
   //refresh token
-  async refreshTokens(user: any): Promise<RefreshResponse> {
+  async refreshTokens(user: any): Promise<RefreshType> {
     try {
       const { id, email } = user
 
@@ -141,7 +141,19 @@ export class AuthService {
         actionToken,
       })
 
-      return { id, email, accessToken, refreshToken, actionToken }
+      const name = findUser.name
+      return {
+        details: {
+          user: {
+            id,
+            name,
+            email,
+            accessToken,
+            refreshToken,
+            actionToken,
+          },
+        },
+      }
     } catch (error) {
       throw new InternalServerErrorException(error.message)
     }
@@ -165,6 +177,7 @@ export class AuthService {
         reqCompanies,
         adminCompanies,
         quizAttempts,
+        notifications,
       } = await this.userService.getUserByEmail(user.email)
 
       return {
@@ -186,6 +199,7 @@ export class AuthService {
             reqCompanies,
             adminCompanies,
             quizAttempts,
+            notifications,
           },
         },
       }

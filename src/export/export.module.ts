@@ -15,6 +15,10 @@ import { RedisModule } from 'src/redis/redis.module'
 import { Question } from 'src/questions/entities/question.entity'
 import { QuestionService } from 'src/questions/question.service'
 import { Request } from 'src/requests/entities/request.entity'
+import { NotificationsService } from 'src/notifications/notifications.service'
+import { Notification } from 'src/notifications/entities/notification.entity'
+import { EventsGateway } from 'src/events/events.gateway'
+import { JwtModule } from '@nestjs/jwt'
 
 @Module({
   imports: [
@@ -28,7 +32,9 @@ import { Request } from 'src/requests/entities/request.entity'
       Question,
       QuizAttempt,
       RedisModule,
+      Notification,
     ]),
+    JwtModule,
   ],
   controllers: [ExportController],
   providers: [
@@ -37,6 +43,8 @@ import { Request } from 'src/requests/entities/request.entity'
     UserService,
     RedisService,
     QuestionService,
+    NotificationsService,
+    EventsGateway,
   ],
 })
 export class ExportModule {}
