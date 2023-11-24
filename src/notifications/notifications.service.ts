@@ -10,18 +10,26 @@ import { Notification } from './entities/notification.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MessageStatus, NewNotification } from './types/types'
+import { EventsGateway } from 'src/events/events.gateway'
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     readonly notificationsRepository: Repository<Notification>,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   // create a new notification
   async createNewNotification(data: NewNotification) {
     try {
       await this.notificationsRepository.save(data)
+
+      // send notification to each member of the company
+      await this.eventsGateway.sendNotification({
+        userId: data.user.id,
+        notification: data.text,
+      })
     } catch (error) {
       throw new InternalServerErrorException(error.message)
     }
