@@ -11,6 +11,8 @@ import { QuestionController } from './question.controller'
 import { QuestionService } from './question.service'
 import { Notification } from 'src/notifications/entities/notification.entity'
 import { NotificationsService } from 'src/notifications/notifications.service'
+import { EventsGateway } from 'src/events/events.gateway'
+import { JwtModule } from '@nestjs/jwt'
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -23,9 +25,10 @@ import { NotificationsService } from 'src/notifications/notifications.service'
       Question,
       Notification,
     ]),
+    JwtModule
   ],
   controllers: [QuestionController],
-  providers: [QuestionService, NotificationsService],
+  providers: [QuestionService, NotificationsService, EventsGateway],
   exports: [QuestionService],
 })
 export class QuestionModule {}

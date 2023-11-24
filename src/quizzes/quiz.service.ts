@@ -14,7 +14,6 @@ import { QuestionService } from 'src/questions/question.service'
 import { UpdateQuizDto } from './dto/update-quiz.dto'
 import { AllQuizzesResponse, DeletedQuizRes, QuizResponse } from './types/types'
 import { NotificationsService } from 'src/notifications/notifications.service'
-import { EventsGateway } from 'src/events/events.gateway'
 
 @Injectable()
 export class QuizService {
@@ -27,7 +26,6 @@ export class QuizService {
     private readonly companyRepository: Repository<Company>,
     private readonly questionService: QuestionService,
     readonly notificationsService: NotificationsService,
-    private readonly eventsGateway: EventsGateway,
   ) {}
 
   // get all quizzes
@@ -216,12 +214,6 @@ export class QuizService {
             user,
             company,
             text,
-          })
-
-          //send websocket notification
-          await this.eventsGateway.sendNotification({
-            userId: user.id,
-            notification: text,
           })
         }),
       )
