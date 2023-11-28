@@ -8,13 +8,22 @@ export class Invitation {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(() => User, (user) => user.sentInvitations)
+  @ManyToOne(() => User, (user) => user.sentInvitations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   inviter: User
 
-  @ManyToOne(() => User, (user) => user.receivedInvitations)
+  @ManyToOne(() => User, (user) => user.receivedInvitations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   invitee: User
 
-  @ManyToOne(() => Company, (company) => company.invitations)
+  @ManyToOne(() => Company, (company) => company.invitations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   company: Company
 
   @Column({

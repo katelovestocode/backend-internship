@@ -16,9 +16,12 @@ import { ExportModule } from './export/export.module'
 import { AnalyticsModule } from './analytics/analytics.module'
 import { NotificationsModule } from './notifications/notifications.module'
 import { EventsModule } from './events/events.module'
+import { CronJobModule } from './cron-job/cron-job.module'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -45,6 +48,7 @@ import { EventsModule } from './events/events.module'
     AnalyticsModule,
     NotificationsModule,
     EventsModule,
+    CronJobModule,
   ],
   controllers: [],
   providers: [],
