@@ -36,7 +36,8 @@ export class AuthController {
     return await this.authService.login(loginDto)
   }
 
-  @Get('/refresh')
+  // passing token in the body: {"refreshToken": "eyn4wu4r4rj24"}
+  @Post('/refresh')
   @UseGuards(RefresJwtGuard)
   @HttpCode(HttpStatus.OK)
   async refreshToken(@CurrentUser() user: JwtPayload): Promise<RefreshType> {

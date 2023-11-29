@@ -19,6 +19,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager'
 export class QuizAttemptController {
   constructor(private readonly quizAttemptService: QuizAttemptService) {}
 
+  // { "questions": [{"id": 99,"answer": "George Washington"},{ "id": 100,"answer": "1939"},{"id": 101,"answer": "Egyptian" }]}
   @UseInterceptors(CacheInterceptor)
   @Post('/users/:userId/quizzes/:quizId/submit')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)

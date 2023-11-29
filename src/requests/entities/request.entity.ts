@@ -8,10 +8,16 @@ export class Request {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(() => User, (user) => user.sentRequests)
+  @ManyToOne(() => User, (user) => user.sentRequests, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   requester: User
 
-  @ManyToOne(() => Company, (company) => company.requests)
+  @ManyToOne(() => Company, (company) => company.requests, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   company: Company
 
   @Column({

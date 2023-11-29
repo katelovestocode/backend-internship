@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -12,6 +13,7 @@ import { CreateQuizAttemptDto } from './dto/create-quiz_attempt.dto'
 import { User } from 'src/user/entities/user.entity'
 import { QuizAttemptRes } from './types/types'
 import { RedisService } from 'src/redis/redis.service'
+import dayjs from 'dayjs'
 
 @Injectable()
 export class QuizAttemptService {
@@ -47,6 +49,26 @@ export class QuizAttemptService {
 
       if (!user) {
         throw new NotFoundException('User is not found')
+      }
+
+      // Check if the user has submitted the quiz before
+      const previousAttempts = user.quizAttempts
+        .filter((attempt) => attempt.quiz.id === quizId)
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+
+      const currentDate = dayjs()
+      const nextAvailableAttempt = dayjs(previousAttempts[0].timestamp).add(
+        quiz.frequencyInDays,
+        'day',
+      )
+
+      if (currentDate < nextAvailableAttempt) {
+        const hourDifference = nextAvailableAttempt.diff(currentDate, 'hour')
+        const minutesDifference = nextAvailableAttempt.diff(currentDate, 'minute') % 60
+
+        throw new ForbiddenException(
+          `Quiz will be available in ${hourDifference} hour ${minutesDifference} minutes`,
+        )
       }
 
       const submittedQuiz = await this.calculateUserQuizResult(
