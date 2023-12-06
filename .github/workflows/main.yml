@@ -17,7 +17,7 @@ jobs:
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USERNAME }}
-          key: ${{ secrets.AWS_KEY_PAIR_PRIVATE_KEY }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
           script: |
             rm -rf backend-internship
