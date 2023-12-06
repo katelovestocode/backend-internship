@@ -58,7 +58,7 @@ jobs:
             exit 1
             fi
 
-            chmod -R 777 app/backend-internship/pgdata
+            sudo chmod -R 777 app/backend-internship/pgdata
             docker-compose up --build -d
 
             if [ $? -ne 0 ]; then
