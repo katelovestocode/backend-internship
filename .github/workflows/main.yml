@@ -24,7 +24,7 @@ jobs:
           script: |
             cd app
             rm -rf backend-internship
-            git clone git@github.com:katelovestocode/backend-internship.git
+            git clone git@github.com:katelovestocode/backend-internship.git --branch BE-20-add-github-actions --single-branch
             cd backend-internship
 
             if [ ! -d .git ]; then
