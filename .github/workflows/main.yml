@@ -20,7 +20,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
           script: |
-            cd app
             git pull git@github.com:katelovestocode/backend-internship.git BE-20-add-github-actions
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
