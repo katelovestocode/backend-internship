@@ -48,20 +48,19 @@ jobs:
             echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
           # Stop backend service only
-            #docker-compose stop backend
+          #docker-compose stop backend
           # Remove backend service only
-           # docker-compose rm -f backend
+          # docker-compose rm -f backend
 
-            if [ $? -ne 0 ]; then
-            echo "Error: Failed to build the Docker image."
-            exit 1
-            fi
+          # if [ $? -ne 0 ]; then
+          # echo "Error: Failed to build the Docker image."
+          # exit 1
+          # fi
 
           # Update and restart, build with new backend service
-           # docker-compose up --build -d
+          # docker-compose up --build -d
 
-
-            if [ $? -ne 0 ]; then
-            echo "Error: Failed to start the Docker container."
-            exit 1
-            fi
+          # if [ $? -ne 0 ]; then
+          # echo "Error: Failed to start the Docker container."
+          # exit 1
+          # fi
