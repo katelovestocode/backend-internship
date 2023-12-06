@@ -20,10 +20,10 @@ jobs:
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
           script: |
+            cd app
             rm -rf backend-internship
-            ls -la  
-            git status 
             git clone git@github.com:katelovestocode/backend-internship.git
+            cd backend-internship
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
             echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
@@ -43,4 +43,4 @@ jobs:
             docker stop docker-container-prod || true
             docker rm docker-container-prod || true
             docker build -t docker-container-prod .
-            docker run -d -p 3002:3002 --name docker-container-prod /bin/bash
+            docker run -d -p 3002:3002 --name docker-container-prod
