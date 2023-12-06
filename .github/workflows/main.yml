@@ -42,5 +42,6 @@ jobs:
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
             docker stop docker-container-prod || true
             docker rm docker-container-prod || true
-            docker build -t docker-container-prod .
-            docker run -d -p 3002:3002 --name docker-container-prod
+            docker rmi docker-image-prod || true
+            docker build -t docker-image-prod --progress=plain --no-cache --target prod .
+            docker run -d -p 3002:3002 --name docker-container-prod docker-image-prod
