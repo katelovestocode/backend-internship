@@ -14,7 +14,9 @@ services:
       - ${DB_PORT}:${DB_PORT}
   backend:
     container_name: backend-fullstack
-    # image: backend-backend:latest
+    image: backend-backend:latest
+    volumes:
+      - pgdata:/pgdata
     build:
       context: ./
     depends_on:
