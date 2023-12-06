@@ -8,7 +8,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
-import { In, Repository } from 'typeorm'
+import { In, Not, Repository } from 'typeorm'
 import { InvitationStatus } from 'src/company/types/types'
 import { Company } from 'src/company/entities/company.entity'
 import { User } from 'src/user/entities/user.entity'
@@ -32,7 +32,10 @@ export class InvitationService {
   ): Promise<AllInvitesResponse> {
     try {
       const allInvitations = await this.invitationRepository.find({
-        where: { company: { id: companyId } },
+        where: {
+          company: { id: companyId },
+          status: Not(In(['cancelled', 'declined'])),
+        },
         relations: ['company', 'invitee'],
       })
 
@@ -66,6 +69,12 @@ export class InvitationService {
       const invitedUser = await this.userRepository.findOne({
         where: { id: inviteeId },
       })
+
+      if (invitedUser.id === company.owner.id) {
+        throw new BadRequestException(
+          "You can't add owner to the member's list!",
+        )
+      }
 
       if (!invitedUser) {
         throw new NotFoundException('Invited user is not found')
@@ -170,7 +179,11 @@ export class InvitationService {
   async getAllUsersInvitations(userId: number): Promise<AllInvitesResponse> {
     try {
       const allInvitations = await this.invitationRepository.find({
-        where: { invitee: { id: userId } },
+        where: {
+          invitee: { id: userId },
+          status: Not(In(['cancelled', 'declined'])),
+        },
+
         relations: ['company'],
       })
 

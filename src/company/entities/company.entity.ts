@@ -27,7 +27,10 @@ export class Company {
   @Column({ type: 'text', nullable: true })
   description: string
 
-  @ManyToOne(() => User, (user) => user.companies)
+  @ManyToOne(() => User, (user) => user.companies, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   owner: User
 

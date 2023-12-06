@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common'
-import { In, Repository } from 'typeorm'
+import { In, Not, Repository } from 'typeorm'
 import { Request } from './entities/request.entity'
 import { Company } from 'src/company/entities/company.entity'
 import { RequestStatus } from 'src/company/types/types'
@@ -26,7 +26,10 @@ export class RequestService {
   async allUsersRequestsToJoin(userId: number): Promise<AllRequests> {
     try {
       const allRequests = await this.requestRepository.find({
-        where: { requester: { id: userId } },
+        where: {
+          requester: { id: userId },
+          status: Not(In(['cancelled', 'declined'])),
+        },
         relations: ['company'],
       })
 
@@ -50,10 +53,15 @@ export class RequestService {
     try {
       const company = await this.companyRepository.findOne({
         where: { id: companyId },
+        relations: ['owner'],
       })
 
       if (!company) {
         throw new NotFoundException('Company is not found')
+      }
+
+      if (userId === company.owner.id) {
+        throw new BadRequestException("Owner can't be a member of the company!")
       }
 
       const existingRequest = await this.requestRepository.findOne({
@@ -141,7 +149,10 @@ export class RequestService {
   async getAllCompanyRequests(companyId: number): Promise<AllRequests> {
     try {
       const allRequests = await this.requestRepository.find({
-        where: { company: { id: companyId } },
+        where: {
+          company: { id: companyId },
+          status: Not(In(['cancelled', 'declined'])),
+        },
         relations: ['company', 'requester'],
       })
 

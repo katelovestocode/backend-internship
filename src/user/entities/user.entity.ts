@@ -46,7 +46,10 @@ export class User {
   sentRequests: Request[]
 
   // user is a member of other companies
-  @ManyToMany(() => Company, (company) => company.members)
+  @ManyToMany(() => Company, (company) => company.members, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   reqCompanies: Company[]
 
   // user is an admin of the company

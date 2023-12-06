@@ -14,13 +14,14 @@ services:
       - ${DB_PORT}:${DB_PORT}
   backend:
     container_name: backend-fullstack
+    # image: backend-backend:latest
     build:
       context: ./
     depends_on:
       - db
     restart: unless-stopped
     ports:
-      - '${PORT}:3001'
+      - '${PORT}:3002'
     environment:
       - PORT=${PORT}
       - HOST=${HOST}
@@ -40,3 +41,6 @@ services:
       - REDIS_HOSTS=local:redis:6379
     volumes:
       - ./redis/data:/data
+
+volumes:
+  pgdata:

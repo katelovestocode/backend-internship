@@ -32,7 +32,7 @@ npm install
 
 ## 3. Running the Application:
 
-Start your Nest.js application on port **3001** using the following command:
+Start your Nest.js application on port **3002** using the following command:
 
 ```
 npm run start:dev
@@ -47,7 +47,7 @@ To configure your Nest.js application, you will need an environment (`.env`) fil
 2. Define your environment variables in the `.env` file. You need to specify values for variables like PORT, database connection URLs, API keys, and other configuration settings. For example:
 
    ```env
-   PORT=3001
+   PORT=3002
    ```
 
 ## 5.Prerequisites to run the Application in Docker
@@ -77,13 +77,13 @@ Now that you have built the Docker image, you can run the application within a D
 ### FOR Tests:
 
 ```
-docker run -d -p 3001:3001 --name docker-container-test docker-image-test
+docker run -d -p 3002:3002 --name docker-container-test docker-image-test
 ```
 
 ### FOR Production:
 
 ```
-docker run -d -p 3001:3001 --name docker-container-prod docker-image-prod
+docker run -d -p 3002:3002 --name docker-container-prod docker-image-prod
 ```
 
 ## 8. Accessing the Application
@@ -91,7 +91,7 @@ docker run -d -p 3001:3001 --name docker-container-prod docker-image-prod
 Once the container is up and running, you can access the application in your web browser by navigating to:
 
 ```
-http://localhost:3001
+http://localhost:3002
 ```
 
 ## 9. Stopping and Cleaning Up
