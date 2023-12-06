@@ -24,6 +24,12 @@ jobs:
             rm -rf backend-internship
             git clone git@github.com:katelovestocode/backend-internship.git
             cd backend-internship
+
+            if [ ! -d .git ]; then
+            echo "Error: Failed to clone the repository."
+            exit 1
+            fi
+
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
             echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
@@ -44,4 +50,15 @@ jobs:
             docker rm docker-container-prod || true
             docker rmi docker-image-prod || true
             docker build -t docker-image-prod --progress=plain --no-cache --target prod .
+
+            if [ $? -ne 0 ]; then
+            echo "Error: Failed to build the Docker image."
+            exit 1
+            fi
+
             docker run -d -p 3002:3002 --name docker-container-prod docker-image-prod
+
+            if [ $? -ne 0 ]; then
+            echo "Error: Failed to start the Docker container."
+            exit 1
+            fi
