@@ -1,5 +1,3 @@
-set -x
-
 name: Deploy Backend to EC2
 
 on:
@@ -24,6 +22,7 @@ jobs:
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
           script: |
+            set -x 
             cd app
             git pull git@github.com:katelovestocode/backend-internship.git --branch BE-20-add-github-actions --single-branch
             cd backend-internship
