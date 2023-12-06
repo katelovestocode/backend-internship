@@ -23,9 +23,8 @@ jobs:
           port: ${{ secrets.AWS_PORT }}
           script: |
             set -x 
-            cd app
+            cd app/backend-internship
             git pull git@github.com:katelovestocode/backend-internship.git --branch BE-20-add-github-actions --single-branch
-            cd backend-internship
 
             if [ ! -d .git ]; then
             echo "Error: Failed to clone the repository."
