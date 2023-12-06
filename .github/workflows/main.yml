@@ -23,8 +23,7 @@ jobs:
           port: ${{ secrets.AWS_PORT }}
           script: |
             cd app
-            rm -rf backend-internship
-            git clone git@github.com:katelovestocode/backend-internship.git --branch BE-20-add-github-actions --single-branch
+            git pull git@github.com:katelovestocode/backend-internship.git --branch BE-20-add-github-actions --single-branch
             cd backend-internship
 
             if [ ! -d .git ]; then
@@ -48,17 +47,15 @@ jobs:
             echo "AUTH0_ISSUER_URL=${{ secrets.AUTH0_ISSUER_URL }}" >> .env
             echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
-            docker stop docker-container-prod || true
-            docker rm docker-container-prod || true
-            docker rmi docker-image-prod || true
-            docker build -t docker-image-prod --progress=plain --no-cache --target prod .
+            docker-compose down || true
+            docker-compose up --build 
 
             if [ $? -ne 0 ]; then
             echo "Error: Failed to build the Docker image."
             exit 1
             fi
 
-            docker run -d -p 3002:3002 --name docker-container-prod docker-image-prod
+
 
             if [ $? -ne 0 ]; then
             echo "Error: Failed to start the Docker container."
