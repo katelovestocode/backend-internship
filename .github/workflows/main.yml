@@ -24,7 +24,8 @@ jobs:
           script: |
             set -x 
             cd app/backend-internship
-            git pull git@github.com:katelovestocode/backend-internship.git --branch BE-20-add-github-actions --single-branch
+            git checkout BE-20-add-github-actions
+            git pull origin BE-20-add-github-actions
 
             if [ ! -d .git ]; then
             echo "Error: Failed to clone the repository."
