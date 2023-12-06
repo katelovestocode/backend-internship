@@ -20,7 +20,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
           script: |
-            git pull git@github.com:katelovestocode/backend-internship.git BE-20-add-github-actions
+            rm -rf BE-20-add-github-actions
+            git clone git@github.com:katelovestocode/backend-internship.git BE-20-add-github-actions
+            cd BE-20-add-github-actions
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
             echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
@@ -39,3 +41,8 @@ jobs:
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
             docker-compose down || true
             docker-compose up --build .
+
+      - name: Debug
+        run: |
+          pwd
+          ls -la
