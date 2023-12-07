@@ -28,7 +28,7 @@ jobs:
             sudo chown ubuntu redis/data/dump.rdb
             git add redis/data/dump.rdb
             git commit -m "Committing changes to dump.rdb"
-            git pull origin BE-20-add-github-actions
+            git pull origin BE-20-add-github-actions --rebase
 
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
