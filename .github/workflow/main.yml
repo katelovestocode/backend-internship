@@ -1,4 +1,4 @@
-name: Deploy to EC2 from develop
+name: Deploy to EC2 from Develop
 
 on:
   push:
