@@ -25,6 +25,8 @@ jobs:
             set -x 
             cd app/backend-internship
             git checkout BE-20-add-github-actions
+            git add redis/data/dump.rdb
+            git commit -m "Committing changes to dump.rdb"
             git pull origin BE-20-add-github-actions
 
             echo "PORT=${{ secrets.PORT }}" > .env
@@ -45,5 +47,5 @@ jobs:
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
             docker-compose stop backend
             docker-compose rm -f backend
-            sudo chmod -R 777 backend-internship/pgdata
+            sudo chmod -R 777 /pgdata
             docker-compose up --build -d
