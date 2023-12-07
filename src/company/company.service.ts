@@ -213,8 +213,9 @@ export class CompanyService {
         )
       }
 
+      const alreadyAnAdmin = company.admins.some((admin) => admin.id === userId)
+
       if (isAdmin) {
-        const alreadyAnAdmin = company.admins.find((user) => user)
         if (alreadyAnAdmin) {
           throw new ForbiddenException('User is already an Admin')
         }
