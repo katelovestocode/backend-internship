@@ -3,7 +3,7 @@ name: Deploy to EC2 from Develop
 on:
   push:
     branches:
-      - BE-19-add-gitHub-actions-and-AWS-deploy
+      - develop
 
 jobs:
   Deploy:
@@ -12,7 +12,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          ref: BE-19-add-gitHub-actions-and-AWS-deploy
+          ref: develop
 
       - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
@@ -24,11 +24,10 @@ jobs:
           script: |
             set -x 
             cd app/backend-internship
-            git checkout BE-19-add-gitHub-actions-and-AWS-deploy
+            git checkout develop
             sudo chown ubuntu redis/data/dump.rdb
             git stash save "Stashing changes to dump.rdb"
-            git pull origin BE-19-add-gitHub-actions-and-AWS-deploy
-
+            git pull origin develop
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
             echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
