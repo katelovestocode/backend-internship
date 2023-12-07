@@ -23,7 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule'
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: ['.env'],
       isGlobal: true,
       load: [DatabaseConfig],
     }),
