@@ -1,4 +1,4 @@
-name: Deploy Backend to EC2 from develop
+name: Deploy to EC2 from develop
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
             git checkout BE-19-add-gitHub-actions-and-AWS-deploy
             sudo chown ubuntu redis/data/dump.rdb
             git stash save "Stashing changes to dump.rdb"
-            git pull origin BE-19-add-gitHub-actions-and-AWS-deploy 
+            git pull origin BE-19-add-gitHub-actions-and-AWS-deploy
 
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
