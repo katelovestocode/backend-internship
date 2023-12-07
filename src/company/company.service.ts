@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -131,7 +132,7 @@ export class CompanyService {
         where: { id },
         relations: ['owner'],
       })
-      
+
       if (!company) {
         throw new NotFoundException('Company do not exist!')
       }
@@ -213,6 +214,10 @@ export class CompanyService {
       }
 
       if (isAdmin) {
+        const alreadyAnAdmin = company.admins.find((user) => user)
+        if (alreadyAnAdmin) {
+          throw new ForbiddenException('User is already an Admin')
+        }
         company.admins.push(user)
       } else {
         company.admins = company.admins.filter((admin) => admin.id !== userId)
