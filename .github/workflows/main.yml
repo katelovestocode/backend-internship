@@ -1,0 +1,50 @@
+name: Deploy to EC2 from Develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+
+      - name: Executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USERNAME }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.AWS_PORT }}
+          script: |
+            set -x 
+            cd app/backend-internship
+            git checkout develop
+            sudo chown ubuntu redis/data/dump.rdb
+            git stash save "Stashing changes to dump.rdb"
+            git pull origin develop
+            echo "PORT=${{ secrets.PORT }}" > .env
+            echo "HOST=${{ secrets.HOST }}" >> .env
+            echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+            echo "DB_CONNECTION=${{ secrets.DB_CONNECTION }}" >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "ACCESS_SECRET_KEY=${{ secrets.ACCESS_SECRET_KEY }}" >> .env
+            echo "REFRESH_SECRET_KEY=${{ secrets.REFRESH_SECRET_KEY }}" >> .env
+            echo "ACTION_SECRET_KEY=${{ secrets.ACTION_SECRET_KEY }}" >> .env
+            echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+            echo "AUTH0_ISSUER_URL=${{ secrets.AUTH0_ISSUER_URL }}" >> .env
+            echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
+            echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
+            docker-compose stop backend
+            docker-compose rm -f backend
+            sudo chmod -R 777 pgdata
+            docker-compose up --build -d

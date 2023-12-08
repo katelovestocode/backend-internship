@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -63,7 +64,9 @@ export class CompanyService {
         status_code: HttpStatus.OK,
         result: 'Successfully retrieved all companies',
         details: {
-          companies: await this.companyRepository.find(),
+          companies: await this.companyRepository.find({
+            relations: ['owner', 'members', 'admins'],
+          }),
         },
       }
     } catch (error) {
@@ -73,7 +76,10 @@ export class CompanyService {
 
   async getOneCompany(id: number): Promise<CompanyResponse> {
     try {
-      const oneCompany = await this.companyRepository.findOne({ where: { id } })
+      const oneCompany = await this.companyRepository.findOne({
+        where: { id },
+        relations: ['owner', 'members', 'admins'],
+      })
 
       if (!oneCompany) {
         throw new NotFoundException('Company do not exist!')
@@ -122,7 +128,11 @@ export class CompanyService {
 
   async removeCompany(id: number): Promise<DeletedCompanyResponse> {
     try {
-      const company = await this.companyRepository.findOne({ where: { id } })
+      const company = await this.companyRepository.findOne({
+        where: { id },
+        relations: ['owner'],
+      })
+
       if (!company) {
         throw new NotFoundException('Company do not exist!')
       }
@@ -148,7 +158,7 @@ export class CompanyService {
     try {
       const company = await this.companyRepository.findOne({
         where: { id: companyId },
-        relations: ['owner', 'members'],
+        relations: ['owner', 'members', 'admins'],
       })
 
       if (!company) {
@@ -163,7 +173,8 @@ export class CompanyService {
         )
       }
 
-      company.members = company.members.filter((user) => user.id !== userId)
+      company.members = company.members.filter((user) => user.id !== userId);
+      company.admins = company.admins.filter((admin) => admin.id !== userId);
       const updated = await this.companyRepository.save(company)
 
       return {
@@ -203,7 +214,12 @@ export class CompanyService {
         )
       }
 
+      const alreadyAnAdmin = company.admins.some((admin) => admin.id === userId)
+
       if (isAdmin) {
+        if (alreadyAnAdmin) {
+          throw new ForbiddenException('User is already an Admin')
+        }
         company.admins.push(user)
       } else {
         company.admins = company.admins.filter((admin) => admin.id !== userId)
