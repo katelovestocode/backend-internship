@@ -158,7 +158,7 @@ export class CompanyService {
     try {
       const company = await this.companyRepository.findOne({
         where: { id: companyId },
-        relations: ['owner', 'members'],
+        relations: ['owner', 'members', 'admins'],
       })
 
       if (!company) {
@@ -173,7 +173,8 @@ export class CompanyService {
         )
       }
 
-      company.members = company.members.filter((user) => user.id !== userId)
+      company.members = company.members.filter((user) => user.id !== userId);
+      company.admins = company.admins.filter((admin) => admin.id !== userId);
       const updated = await this.companyRepository.save(company)
 
       return {
