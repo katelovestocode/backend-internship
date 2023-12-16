@@ -3,7 +3,7 @@ name: Deploy to EC2 from Develop
 on:
   push:
     branches:
-      - BE-20-connect-to-AWS
+      - develop
 
 jobs:
   Deploy:
@@ -12,7 +12,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          ref: BE-20-connect-to-AWS
+          ref: develop
 
       - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
@@ -24,8 +24,8 @@ jobs:
           script: |
             set -x 
             cd app/backend-internship
-            git checkout BE-20-connect-to-AWS 
-            git pull origin BE-20-connect-to-AWS 
+            git checkout develop 
+            git pull origin develop 
 
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
