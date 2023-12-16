@@ -56,19 +56,22 @@ export class QuizAttemptService {
         .filter((attempt) => attempt.quiz.id === quizId)
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
 
-      const currentDate = dayjs()
-      const nextAvailableAttempt = dayjs(previousAttempts[0].timestamp).add(
-        quiz.frequencyInDays,
-        'day',
-      )
-
-      if (currentDate < nextAvailableAttempt) {
-        const hourDifference = nextAvailableAttempt.diff(currentDate, 'hour')
-        const minutesDifference = nextAvailableAttempt.diff(currentDate, 'minute') % 60
-
-        throw new ForbiddenException(
-          `Quiz will be available in ${hourDifference} hour ${minutesDifference} minutes`,
+      if (previousAttempts.length > 0) {
+        const currentDate = dayjs()
+        const nextAvailableAttempt = dayjs(previousAttempts[0].timestamp).add(
+          quiz.frequencyInDays,
+          'day',
         )
+
+        if (currentDate < nextAvailableAttempt) {
+          const hourDifference = nextAvailableAttempt.diff(currentDate, 'hour')
+          const minutesDifference =
+            nextAvailableAttempt.diff(currentDate, 'minute') % 60
+
+          throw new ForbiddenException(
+            `Quiz will be available in ${hourDifference} hour ${minutesDifference} minutes`,
+          )
+        }
       }
 
       const submittedQuiz = await this.calculateUserQuizResult(

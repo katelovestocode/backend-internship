@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -96,6 +97,26 @@ export class QuizService {
 
       if (!company) {
         throw new NotFoundException('Company is not found')
+      }
+
+      if (createQuizDto.questions) {
+        for (const questionDto of createQuizDto.questions) {
+          if (
+            questionDto.answers &&
+            new Set(questionDto.answers).size !== questionDto.answers.length
+          ) {
+            throw new BadRequestException('Answers must be unique')
+          }
+          if (
+            questionDto.correctAnswer &&
+            questionDto.answers &&
+            !questionDto.answers.includes(questionDto.correctAnswer)
+          ) {
+            throw new BadRequestException(
+              'Correct answer must be one of the provided answers',
+            )
+          }
+        }
       }
 
       const quiz = this.quizRepository.create({

@@ -14,6 +14,7 @@ import { QuestionDto } from 'src/quizzes/dto/create-quiz.dto'
 import { AuthGuard } from '@nestjs/passport'
 import { AdminOrOwnerValidGuard } from 'src/company/guards/admin-validation.guard'
 import { DeletedQuestionRes, QuestionResponse } from './types/types'
+import { UpdateQuestionDto } from 'src/quizzes/dto/update-quiz.dto'
 
 @Controller('questions')
 export class QuestionController {
@@ -42,12 +43,12 @@ export class QuestionController {
   async updateQuestionToQuiz(
     @Param('quizId') quizId: string,
     @Param('questionId') questionId: string,
-    @Body() createQuestionDto: QuestionDto,
+    @Body() updateQuestionDto: UpdateQuestionDto,
   ): Promise<QuestionResponse> {
     return await this.questionService.updateOneQuestionToQuiz(
       +quizId,
       +questionId,
-      createQuestionDto,
+      updateQuestionDto,
     )
   }
 

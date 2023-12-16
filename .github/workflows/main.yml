@@ -44,8 +44,7 @@ jobs:
             echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
 
-            docker stop backend-prod || true
-            docker rm backend-prod || true
-            docker rmi backend-image-prod || true
-            docker build -t backend-image-prod --progress=plain --no-cache --target prod .
-            docker run -d -p 3002:3002 --name backend-prod backend-image-prod
+            docker-compose stop backend
+            docker-compose rm -f backend
+            sudo chmod -R 777 pgdata
+            docker-compose up --build -d

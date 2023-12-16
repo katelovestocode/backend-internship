@@ -22,12 +22,15 @@ export class UpdateQuizDto {
 
 export class UpdateQuestionDto {
   @IsString()
+  @IsOptional()
   question: string
 
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(2)
   answers: string[]
 
   @IsString()
+  @IsOptional()
   correctAnswer: string
 }
