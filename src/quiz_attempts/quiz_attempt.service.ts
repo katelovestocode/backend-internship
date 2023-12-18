@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   HttpStatus,
   Injectable,
@@ -35,11 +36,15 @@ export class QuizAttemptService {
     try {
       const quiz = await this.quizRepository.findOne({
         where: { id: quizId },
-        relations: ['questions', 'company'],
+        relations: ['questions', 'company', 'company.members'],
       })
 
       if (!quiz) {
         throw new NotFoundException('Quiz is not found')
+      }
+
+      if (!quiz.company.members.map((member) => member.id).includes(userId)) {
+        throw new ForbiddenException('User is not a member of the company')
       }
 
       const user = await this.userRepository.findOne({
