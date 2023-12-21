@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ForbiddenException,
   HttpStatus,
   Injectable,
@@ -12,7 +11,7 @@ import { Repository } from 'typeorm'
 import { QuizAttempt } from './entities/quiz_attempt.entity'
 import { CreateQuizAttemptDto } from './dto/create-quiz_attempt.dto'
 import { User } from 'src/user/entities/user.entity'
-import { QuizAttemptRes } from './types/types'
+import { QuizAttemptRes, FilteredQuizAttemptsType } from './types/types'
 import { RedisService } from 'src/redis/redis.service'
 import dayjs from 'dayjs'
 
@@ -27,6 +26,33 @@ export class QuizAttemptService {
     private readonly quizAttemptRepository: Repository<QuizAttempt>,
     private readonly redisService: RedisService,
   ) {}
+
+  async userGetsAllQuizAttempts(
+    userId: number,
+  ): Promise<FilteredQuizAttemptsType> {
+    try {
+      const userQuizAttempts = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: [
+          'quizAttempts',
+          'quizAttempts.quiz.company',
+          'quizAttempts.quiz',
+        ],
+      })
+
+      if (!userQuizAttempts) {
+        throw new NotFoundException('Quiz Attempts are not found')
+      }
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'Quiz Attempts has been successfully retrived',
+        details: userQuizAttempts,
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
 
   async userSubmitsQuiz(
     userId: number,

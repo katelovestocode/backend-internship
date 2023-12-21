@@ -11,7 +11,10 @@ export class QuizAttempt {
   @ManyToOne(() => User, (user) => user.quizAttempts)
   user: User
 
-  @ManyToOne(() => Quiz, (quiz) => quiz.quizAttempts)
+  @ManyToOne(() => Quiz, (quiz) => quiz.quizAttempts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   quiz: Quiz
 
   @ManyToOne(() => Company, (company) => company.quizAttempts)

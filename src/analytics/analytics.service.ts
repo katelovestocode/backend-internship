@@ -112,7 +112,7 @@ export class AnalyticsService {
     }
   }
 
-  // get list of all user's quiz attempts
+  // get list of all last user's quiz attempts
   async getUserAllQuizAverages(userId: number): Promise<QuizzAverageResponse> {
     try {
       const user = await this.userRepository.findOne({
@@ -129,19 +129,29 @@ export class AnalyticsService {
         throw new NotFoundException('User is not found')
       }
 
-      const analytics = user.quizAttempts.map((quiz) => {
-        return {
-          userId: userId,
-          userName: quiz.user.name,
-          quizAttemptId: quiz.id,
-          quizAvarage: quiz.overallRatingAcrossSystem,
-          quizTime: quiz.timestamp,
+      const latestAttempts: { [quizId: number]: any } = {}
+
+      user.quizAttempts.forEach((attempt) => {
+        const quizId = attempt.quiz.id
+        if (
+          !latestAttempts[quizId] ||
+          attempt.timestamp > latestAttempts[quizId].quizTime
+        ) {
+          latestAttempts[quizId] = {
+            userId: attempt.user.id,
+            userName: attempt.user.name,
+            quizAttemptId: attempt.id,
+            quizAvarage: attempt.averageScoreWithinCompany,
+            quizTime: attempt.timestamp,
+          }
         }
       })
 
+      const analytics = Object.values(latestAttempts)
+
       return {
         status_code: HttpStatus.OK,
-        result: `User average ratings in all quizzes`,
+        result: `List of all LAST users average quizz attempts`,
         details: {
           analytics: analytics,
         },

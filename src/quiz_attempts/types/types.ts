@@ -9,3 +9,9 @@ export type QuizAttemptRes = {
 export type QuizAttemptDetails = {
   quiz: QuizAttempt
 }
+
+export type FilteredQuizAttemptsType = {
+  status_code: number
+  result: string
+  details: { quizAttempts: QuizAttempt[] }
+}
