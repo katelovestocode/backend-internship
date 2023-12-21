@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -58,6 +59,24 @@ export class QuestionService {
         throw new NotFoundException('Quiz is not found')
       }
 
+      if (createQuestionDto.answers) {
+        if (
+          new Set(createQuestionDto.answers).size !==
+          createQuestionDto.answers.length
+        ) {
+          throw new BadRequestException('Answers must be unique')
+        }
+
+        if (
+          createQuestionDto.correctAnswer &&
+          !createQuestionDto.answers.includes(createQuestionDto.correctAnswer)
+        ) {
+          throw new BadRequestException(
+            'Correct answer must be one of the provided answers',
+          )
+        }
+      }
+
       const newQuestion = this.questionRepository.create({
         question,
         answers,
@@ -94,6 +113,23 @@ export class QuestionService {
         throw new NotFoundException('Question is not found')
       }
 
+      if (updateQuestionDto.answers) {
+        if (
+          new Set(updateQuestionDto.answers).size !==
+          updateQuestionDto.answers.length
+        ) {
+          throw new BadRequestException('Answers must be unique')
+        }
+
+        if (
+          updateQuestionDto.correctAnswer &&
+          !updateQuestionDto.answers.includes(updateQuestionDto.correctAnswer)
+        ) {
+          throw new BadRequestException(
+            'Correct answer must be one of the provided answers',
+          )
+        }
+      }
       existingQuestion.question = updateQuestionDto.question
       existingQuestion.answers = updateQuestionDto.answers
       existingQuestion.correctAnswer = updateQuestionDto.correctAnswer

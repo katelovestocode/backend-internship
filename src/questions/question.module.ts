@@ -25,7 +25,7 @@ import { JwtModule } from '@nestjs/jwt'
       Question,
       Notification,
     ]),
-    JwtModule
+    JwtModule,
   ],
   controllers: [QuestionController],
   providers: [QuestionService, NotificationsService, EventsGateway],

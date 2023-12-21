@@ -38,7 +38,7 @@ export class AnalyticsController {
     return await this.analyticsService.getUserQuizAverages(+userId, +quizId)
   }
 
-  // get list of all user's quiz attempts
+  // get list of all last user's quiz attempts
   @Get('/users/:userId/quizzes')
   @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
   @HttpCode(HttpStatus.OK)

@@ -173,8 +173,8 @@ export class CompanyService {
         )
       }
 
-      company.members = company.members.filter((user) => user.id !== userId);
-      company.admins = company.admins.filter((admin) => admin.id !== userId);
+      company.members = company.members.filter((user) => user.id !== userId)
+      company.admins = company.admins.filter((admin) => admin.id !== userId)
       const updated = await this.companyRepository.save(company)
 
       return {

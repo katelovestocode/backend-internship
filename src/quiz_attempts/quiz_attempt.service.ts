@@ -11,7 +11,7 @@ import { Repository } from 'typeorm'
 import { QuizAttempt } from './entities/quiz_attempt.entity'
 import { CreateQuizAttemptDto } from './dto/create-quiz_attempt.dto'
 import { User } from 'src/user/entities/user.entity'
-import { QuizAttemptRes } from './types/types'
+import { QuizAttemptRes, FilteredQuizAttemptsType } from './types/types'
 import { RedisService } from 'src/redis/redis.service'
 import dayjs from 'dayjs'
 
@@ -27,6 +27,33 @@ export class QuizAttemptService {
     private readonly redisService: RedisService,
   ) {}
 
+  async userGetsAllQuizAttempts(
+    userId: number,
+  ): Promise<FilteredQuizAttemptsType> {
+    try {
+      const userQuizAttempts = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: [
+          'quizAttempts',
+          'quizAttempts.quiz.company',
+          'quizAttempts.quiz',
+        ],
+      })
+
+      if (!userQuizAttempts) {
+        throw new NotFoundException('Quiz Attempts are not found')
+      }
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'Quiz Attempts has been successfully retrived',
+        details: userQuizAttempts,
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
   async userSubmitsQuiz(
     userId: number,
     quizId: number,
@@ -35,11 +62,15 @@ export class QuizAttemptService {
     try {
       const quiz = await this.quizRepository.findOne({
         where: { id: quizId },
-        relations: ['questions', 'company'],
+        relations: ['questions', 'company', 'company.members'],
       })
 
       if (!quiz) {
         throw new NotFoundException('Quiz is not found')
+      }
+
+      if (!quiz.company.members.map((member) => member.id).includes(userId)) {
+        throw new ForbiddenException('User is not a member of the company')
       }
 
       const user = await this.userRepository.findOne({
@@ -56,19 +87,22 @@ export class QuizAttemptService {
         .filter((attempt) => attempt.quiz.id === quizId)
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
 
-      const currentDate = dayjs()
-      const nextAvailableAttempt = dayjs(previousAttempts[0].timestamp).add(
-        quiz.frequencyInDays,
-        'day',
-      )
-
-      if (currentDate < nextAvailableAttempt) {
-        const hourDifference = nextAvailableAttempt.diff(currentDate, 'hour')
-        const minutesDifference = nextAvailableAttempt.diff(currentDate, 'minute') % 60
-
-        throw new ForbiddenException(
-          `Quiz will be available in ${hourDifference} hour ${minutesDifference} minutes`,
+      if (previousAttempts.length > 0) {
+        const currentDate = dayjs()
+        const nextAvailableAttempt = dayjs(previousAttempts[0].timestamp).add(
+          quiz.frequencyInDays,
+          'day',
         )
+
+        if (currentDate < nextAvailableAttempt) {
+          const hourDifference = nextAvailableAttempt.diff(currentDate, 'hour')
+          const minutesDifference =
+            nextAvailableAttempt.diff(currentDate, 'minute') % 60
+
+          throw new ForbiddenException(
+            `Quiz will be available in ${hourDifference} hour ${minutesDifference} minutes`,
+          )
+        }
       }
 
       const submittedQuiz = await this.calculateUserQuizResult(

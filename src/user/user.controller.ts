@@ -20,7 +20,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { AuthGuard } from '@nestjs/passport'
 import { UserValidGuard } from './guards/validation.guard'
-import { CompanyResponse } from 'src/company/types/types'
+import { CompaniesResponse, CompanyResponse } from 'src/company/types/types'
 
 @Controller('users')
 export class UserController {
@@ -79,5 +79,15 @@ export class UserController {
     @Param('companyId') companyId: string,
   ): Promise<CompanyResponse> {
     return this.userService.userLeavesCompany(+userId, +companyId)
+  }
+
+  // user gets all companies where user is an owner and member
+  @Get('/:userId/companies')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
+  @HttpCode(HttpStatus.OK)
+  async getAllCompaniesUserIsAnOwnerAndMember(
+    @Param('userId') userId: string,
+  ): Promise<CompaniesResponse> {
+    return this.userService.getCompaniesUserIsAnOwnerAndMember(+userId)
   }
 }

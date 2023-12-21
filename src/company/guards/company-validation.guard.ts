@@ -32,7 +32,7 @@ export class CompanyValidGuard implements CanActivate {
     try {
       const company = await this.companyRepository.findOne({
         where: { id: +companyId },
-        relations: ['owner'],
+        relations: ['owner', 'admins'],
       })
       const user = await this.userRepository.findOne({
         where: { email: reqEmail },
@@ -46,7 +46,9 @@ export class CompanyValidGuard implements CanActivate {
         throw new BadRequestException('User is not found')
       }
 
-      if (company.owner.id !== user.id) {
+      const isAdmin = company.admins.some((admin) => admin.id === user.id)
+
+      if (!isAdmin && company.owner.id !== user.id) {
         throw new UnauthorizedException(
           'You can only update, delete and see your own companies',
         )

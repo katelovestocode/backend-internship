@@ -17,7 +17,7 @@ import {
 } from './types/user.types'
 import * as bcrypt from 'bcrypt'
 import { Company } from 'src/company/entities/company.entity'
-import { CompanyResponse } from 'src/company/types/types'
+import { CompaniesResponse, CompanyResponse } from 'src/company/types/types'
 
 @Injectable()
 export class UserService {
@@ -187,6 +187,32 @@ export class UserService {
         result: 'User successfully left the company',
         details: {
           company: updated,
+        },
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  // user gets all companies where user is an owner and member
+  async getCompaniesUserIsAnOwnerAndMember(
+    userId: number,
+  ): Promise<CompaniesResponse> {
+    try {
+      const ownerAndMemberOfCompanies = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: ['companies', 'reqCompanies'],
+      })
+
+      if (!ownerAndMemberOfCompanies) {
+        throw new NotFoundException("User doesn't have any companies")
+      }
+
+      return {
+        status_code: HttpStatus.OK,
+        result: 'Successfully retrieved list of companies',
+        details: {
+          list: ownerAndMemberOfCompanies,
         },
       }
     } catch (error) {

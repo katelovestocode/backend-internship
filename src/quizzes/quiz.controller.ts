@@ -23,7 +23,7 @@ export class QuizController {
 
   // get all quizzes
   @Get('/companies/:companyId')
-  @UseGuards(AuthGuard(['jwt', 'auth0']), AdminOrOwnerValidGuard)
+  @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async getAllQuizzes(
     @Param('companyId') companyId: string,
@@ -33,7 +33,7 @@ export class QuizController {
 
   // get one quiz details
   @Get('/:quizId/companies/:companyId')
-  @UseGuards(AuthGuard(['jwt', 'auth0']), AdminOrOwnerValidGuard)
+  @UseGuards(AuthGuard(['jwt', 'auth0']))
   @HttpCode(HttpStatus.OK)
   async getQuizDetails(
     @Param('quizId') quizId: string,

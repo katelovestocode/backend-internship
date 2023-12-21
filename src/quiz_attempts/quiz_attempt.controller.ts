@@ -7,12 +7,13 @@ import {
   Post,
   Body,
   UseInterceptors,
+  Get,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { UserValidGuard } from 'src/user/guards/validation.guard'
 import { CreateQuizAttemptDto } from './dto/create-quiz_attempt.dto'
 import { QuizAttemptService } from './quiz_attempt.service'
-import { QuizAttemptRes } from './types/types'
+import { FilteredQuizAttemptsType, QuizAttemptRes } from './types/types'
 import { CacheInterceptor } from '@nestjs/cache-manager'
 
 @Controller('')
@@ -34,5 +35,15 @@ export class QuizAttemptController {
       +quizId,
       createQuizAttemptDto,
     )
+  }
+
+  // all user's quiz attempts
+  @Get('/users/:userId/quizzes/attempts')
+  @UseGuards(AuthGuard(['jwt', 'auth0']), UserValidGuard)
+  @HttpCode(HttpStatus.OK)
+  async userGetsQuizAttempts(
+    @Param('userId') userId: string,
+  ): Promise<FilteredQuizAttemptsType> {
+    return await this.quizAttemptService.userGetsAllQuizAttempts(+userId)
   }
 }
