@@ -2,16 +2,15 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
 import { NotificationPayload } from './interface/interface'
 import { WebsocketJwtGuard } from './guard/websocket-jwt.guard'
-import { Logger, UseGuards } from '@nestjs/common'
+import { Logger } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
-@WebSocketGateway({
+@WebSocketGateway(8001, {
   cors: {
     origin: '*',
   },
 })
 @WebSocketGateway()
-@UseGuards(WebsocketJwtGuard)
 export class EventsGateway {
   constructor(private readonly jwtService: JwtService) {}
   private readonly logger = new Logger(EventsGateway.name)
@@ -20,14 +19,21 @@ export class EventsGateway {
   server: Server
 
   async handleConnection(client: Socket): Promise<void> {
-    const user = await WebsocketJwtGuard.validateToken(this.jwtService, client)
-
-    if (user) {
-      await client.join(user.id.toString())
-      this.logger.log(`User ${user.id} is connected`)
-    } else {
+    try {
+      const user = await WebsocketJwtGuard.validateToken(
+        this.jwtService,
+        client,
+      )
+      if (user) {
+        await client.join(user.id.toString())
+        this.logger.log(`User ${user.id} is connected`)
+      } else {
+        client.disconnect()
+        this.logger.log(`User ${user.id} is disconnected`)
+      }
+    } catch (error) {
+      this.logger.log('JWT validation error:', error.message)
       client.disconnect()
-      this.logger.log(`User ${user.id} is disconnected`)
     }
   }
 

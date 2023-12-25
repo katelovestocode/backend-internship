@@ -1,27 +1,24 @@
-version: '3.8'
 services:
   db:
     container_name: postgres-fullstack
     image: postgres:14.0-alpine
-    restart: always
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}:${DB_PORT}
   backend:
     container_name: backend-fullstack
-    image: backend-backend:latest
     volumes:
       - pgdata:/pgdata
     build:
       context: ./
+      dockerfile: Dockerfile.backend
     depends_on:
       - db
-    restart: unless-stopped
     ports:
       - '${PORT}:3002'
     environment:
@@ -33,7 +30,19 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - DB_PORT=${DB_PORT}
-
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    container_name: nginx-fullstack
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /etc/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    user: 'nginxuser'
+    restart: always
   # redis:
   #   image: redis
   #   ports:
@@ -43,6 +52,6 @@ services:
   #     - REDIS_HOSTS=local:redis:6379
   #   volumes:
   #     - ./redis/data:/data
-
 volumes:
+  postgres-data:
   pgdata:

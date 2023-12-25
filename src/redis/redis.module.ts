@@ -10,6 +10,7 @@ import { RedisService } from './redis.service'
       useFactory: async (configService: ConfigService) => ({
         store: await redisStore({
           url: configService.get<string>('REDIS_URL'),
+          password: configService.get<string>('REDIS_PASSWORD'),
         }),
       }),
       isGlobal: true,
