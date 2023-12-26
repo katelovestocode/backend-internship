@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - BE-20-connect-to-AWS
+      - develop
 
 jobs:
   Deploy:
@@ -12,7 +12,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          ref: BE-20-connect-to-AWS
+          ref: develop
 
       - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
@@ -21,12 +21,13 @@ jobs:
           username: ${{ secrets.AWS_EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
+
           script: |
             set -x 
             cd app/backend-internship
             git fetch origin
-            git reset --hard origin/BE-20-connect-to-AWS 
-            git pull origin BE-20-connect-to-AWS 
+            git reset --hard origin/develop 
+            git pull origin develop
 
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
@@ -49,7 +50,7 @@ jobs:
             cp /etc/ssl/private/certificate.crt certificate.crt
             cp /etc/ssl/private/private.key private.key
 
-            docker-compose stop backend-fullstack
-            docker-compose rm -f backend-fullstack
-            docker-compose build backend-fullstack
-            docker-compose up --no-deps -d backend-fullstack
+            docker-compose stop backend
+            docker-compose rm -f backend
+            docker-compose build backend
+            docker-compose up --no-deps -d backend
