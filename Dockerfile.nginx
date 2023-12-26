@@ -24,7 +24,6 @@ RUN mkdir -p /var/cache/nginx/client_temp
 RUN mkdir -p /var/cache/nginx/proxy_temp
 RUN mkdir -p /var/cache/nginx/fastcgi_temp
 
-# Create the directory for Nginx cache
 RUN chown -R nginxuser:nginxuser /var/cache/nginx
 
 # Copy SSL certificates into the Docker image

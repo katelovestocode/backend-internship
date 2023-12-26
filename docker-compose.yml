@@ -2,6 +2,7 @@ services:
   db:
     container_name: postgres-fullstack
     image: postgres:14.0-alpine
+    restart: always
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -19,6 +20,7 @@ services:
       dockerfile: Dockerfile.backend
     depends_on:
       - db
+    restart: unless-stopped
     ports:
       - '${PORT}:3002'
     environment:
@@ -43,15 +45,7 @@ services:
       - nginx_cache:/var/cache/nginx
     user: 'nginxuser'
     restart: always
-  # redis:
-  #   image: redis
-  #   ports:
-  #     - '6379:6379'
-  #   container_name: redis-cache
-  #   environment:
-  #     - REDIS_HOSTS=local:redis:6379
-  #   volumes:
-  #     - ./redis/data:/data
 volumes:
   postgres-data:
   pgdata:
+  nginx_cache:

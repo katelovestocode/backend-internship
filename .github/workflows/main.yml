@@ -24,7 +24,8 @@ jobs:
           script: |
             set -x 
             cd app/backend-internship
-            git checkout BE-20-connect-to-AWS 
+            git fetch origin
+            git reset --hard origin/BE-20-connect-to-AWS 
             git pull origin BE-20-connect-to-AWS 
 
             echo "PORT=${{ secrets.PORT }}" > .env
@@ -45,7 +46,10 @@ jobs:
             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
 
-          # docker-compose stop backend
-          # docker-compose rm -f backend
-          # sudo chmod -R 777 pgdata
-          # docker-compose up --build -d
+            cp /etc/ssl/private/certificate.crt certificate.crt
+            cp /etc/ssl/private/private.key private.key
+
+            docker-compose stop backend-fullstack
+            docker-compose rm -f backend-fullstack
+            docker-compose build backend-fullstack
+            docker-compose up --no-deps -d backend-fullstack
