@@ -5,7 +5,7 @@ import { WebsocketJwtGuard } from './guard/websocket-jwt.guard'
 import { Logger } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
-@WebSocketGateway(8001, {
+@WebSocketGateway({
   cors: {
     origin: '*',
   },
