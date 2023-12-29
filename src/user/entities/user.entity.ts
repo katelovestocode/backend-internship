@@ -63,6 +63,9 @@ export class User {
   @OneToMany(() => QuizAttempt, (quizAttempt) => quizAttempt.user)
   quizAttempts: QuizAttempt[]
 
+  @Column({ type: 'varchar', default: '0' })
+  averageRating: number
+
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[]
 

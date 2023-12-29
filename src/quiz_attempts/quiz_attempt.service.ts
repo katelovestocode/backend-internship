@@ -190,6 +190,14 @@ export class QuizAttemptService {
         timestamp: new Date(),
       })
 
+      const currentUser = await this.userRepository.findOne({
+        where: { id: user.id },
+      })
+      // save averageRating into users table
+      currentUser.averageRating = overallRatingAcrossSystem
+
+      await this.userRepository.save(currentUser)
+
       // check for cache first
       const cachedResponse = await this.redisService.get(
         `quiz_responses:${user.id}:${quiz.id}:${quiz.company}`,
@@ -261,35 +269,20 @@ export class QuizAttemptService {
     totalQuestions: number,
   ) {
     try {
-      const allUsers = await this.userRepository.find({
-        relations: ['quizAttempts', 'quizAttempts.quiz.company'],
-      })
+      const allQuizAttempts = user.quizAttempts
 
-      const totalCorrectAcrossSystem = allUsers.reduce((sum, currentUser) => {
-        let userTotalCorrect = currentUser.quizAttempts.reduce(
-          (userSum, attempt) => userSum + attempt.totalCorrect,
-          0,
-        )
+      let totalCorrectAcrossSystem = allQuizAttempts.reduce(
+        (sum, attempt) => sum + attempt.totalCorrect,
+        0,
+      )
 
-        if (currentUser.id === user.id) {
-          userTotalCorrect += totalCorrect
-        }
+      let totalQuestionsAcrossSystem = allQuizAttempts.reduce(
+        (sum, attempt) => sum + attempt.totalQuestions,
+        0,
+      )
 
-        return sum + userTotalCorrect
-      }, 0)
-
-      const totalQuestionsAcrossSystem = allUsers.reduce((sum, currentUser) => {
-        let userTotalQuestions = currentUser.quizAttempts.reduce(
-          (userSum, attempt) => userSum + attempt.totalQuestions,
-          0,
-        )
-
-        if (currentUser.id === user.id) {
-          userTotalQuestions += totalQuestions
-        }
-
-        return sum + userTotalQuestions
-      }, 0)
+      totalCorrectAcrossSystem += totalCorrect
+      totalQuestionsAcrossSystem += totalQuestions
 
       const overallRatingAcrossSystem =
         totalQuestionsAcrossSystem > 0
