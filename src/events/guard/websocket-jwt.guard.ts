@@ -22,6 +22,9 @@ export class WebsocketJwtGuard implements CanActivate {
 
   static validateToken(jwtService: JwtService, client: Socket) {
     const { authorization } = client.handshake.headers
+    if (!authorization) {
+      throw new Error('Authorization header is missing')
+    }
     const token: string = authorization.split(' ')[1]
     const payload = jwtService.verify(token, {
       secret: process.env.ACCESS_SECRET_KEY,

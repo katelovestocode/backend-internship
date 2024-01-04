@@ -18,10 +18,10 @@ export default new DataSource({
   synchronize: false,
   migrationsTableName: 'migrations',
   logging: ['query', 'error'],
-  ssl: true,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    }
-  }
+  // ssl: true,
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   }
+  // }
 })

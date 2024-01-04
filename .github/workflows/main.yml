@@ -1,4 +1,4 @@
-name: Deploy to EC2 from Develop
+name: Deploy to EC2
 
 on:
   push:
@@ -21,11 +21,13 @@ jobs:
           username: ${{ secrets.AWS_EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.AWS_PORT }}
+
           script: |
             set -x 
             cd app/backend-internship
-            git checkout develop 
-            git pull origin develop 
+            git fetch origin
+            git reset --hard origin/develop 
+            git pull origin develop
 
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "HOST=${{ secrets.HOST }}" >> .env
@@ -42,9 +44,13 @@ jobs:
             echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
             echo "AUTH0_ISSUER_URL=${{ secrets.AUTH0_ISSUER_URL }}" >> .env
             echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
+            echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
             echo "AUTH0_JWKS_URL=${{ secrets.AUTH0_JWKS_URL }}" >> .env
+
+            cp /etc/ssl/private/certificate.crt certificate.crt
+            cp /etc/ssl/private/private.key private.key
 
             docker-compose stop backend
             docker-compose rm -f backend
-            sudo chmod -R 777 pgdata
-            docker-compose up --build -d
+            docker-compose build backend
+            docker-compose up --no-deps -d backend
